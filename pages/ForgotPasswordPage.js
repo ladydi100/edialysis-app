@@ -1,30 +1,24 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { sendPasswordResetEmail } from '../services/forgotPasswordService';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 
-const ForgotPasswordPage = ({ navigation }) => {
+const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
 
-  const handlePasswordReset = async () => {
-    try {
-      await sendPasswordResetEmail(email);
-      Alert.alert('Éxito', 'Revisa tu correo para restablecer tu contraseña');
-      navigation.navigate('Login');
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    }
+  const handleSend = () => {
+    // Aquí puedes agregar la lógica para enviar el correo de recuperación
+    alert(`Se enviará un correo a: ${email}`);
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Recuperar Contraseña</Text>
       <TextInput
-        placeholder="Introduce tu correo"
+        placeholder="Ingresa tu correo electrónico"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
-        keyboardType="email-address"
       />
-      <Button title="Enviar" onPress={handlePasswordReset} />
+      <Button title="Enviar" onPress={handleSend} />
     </View>
   );
 };
@@ -34,6 +28,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
     height: 40,

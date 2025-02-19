@@ -8,7 +8,7 @@ const HomePage = () => {
   return (
     <View style={styles.container}>
       <Text>Bienvenido al Home</Text>
-      <Button title="Cerrar Sesión" onPress={logout} />
+      
     </View>
   );
 };

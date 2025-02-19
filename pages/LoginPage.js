@@ -36,6 +36,12 @@ const LoginPage = ({ navigation }) => {
       />
       <Button title="Iniciar Sesión" onPress={handleLogin} />
      
+
+{/* Enlace para olvidar contraseña */}
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={styles.forgotPasswordText}>¿Has olvidado tu contraseña?</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -55,7 +61,7 @@ const styles = StyleSheet.create({
   },
 
    forgotPasswordText: {
-    marginTop: 10,
+    marginTop: 16,
     color: 'blue',
     textAlign: 'center',
   },
