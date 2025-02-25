@@ -7,6 +7,7 @@ import WelcomePage from '../pages/WellcomePage';
 import RegisterPage from '../pages/RegisterPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage'; 
 import BottomTabNavigator from './BottomTabNavigator';
+import AddMedicationPage from '../pages/AddMedicationPage';
 
 const Stack = createStackNavigator();
 
@@ -23,9 +24,11 @@ export default function AppNavigator() {
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Register" component={RegisterPage} />
             <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />
+
           
         </>
       )}
+     <Stack.Screen name="AddMedication" component={AddMedicationPage} />
     </Stack.Navigator>
   );
 }
