@@ -1,187 +1,170 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 
-const HomePage = () => {
+const HomePage = ({ navigation }) => {
+  const [meds, setMeds] = useState([
+    { id: 1, time: '10:00', name: 'Paracetamol', color: 'green', taken: false },
+    { id: 2, time: '10:45', name: 'Enalapril', color: 'purple', taken: false },
+    { id: 3, time: '11:30', name: 'Diálisis', color: 'orange', taken: false },
+    { id: 4, time: '18:00', name: 'Enalapril', color: 'purple', taken: false },
+  ]);
+
+  const toggleMedication = (id) => {
+    setMeds((prevMeds) =>
+      prevMeds.map((med) =>
+        med.id === id ? { ...med, taken: !med.taken } : med
+      )
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hola, <Text style={styles.bold}>¡Juan!</Text></Text>
+        <View>
+          <Text style={styles.greeting}>Hola, <Text style={styles.userName}>¡Juan!</Text></Text>
+        </View>
         <Image source={require('../assets/Juan.png')} style={styles.avatar} />
       </View>
 
       <Text style={styles.sectionTitle}>Valores de salud</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.healthValuesContainer}>
         <View style={[styles.healthCard, styles.cardBlue]}>
-          <Image source={require('../assets/frecuencia-cardiaca.png')} style={styles.iconSmall} />
-          <Text style={styles.healthValue}>75</Text>
-          <Text style={styles.healthLabel}>Frecuencia cardíaca</Text>
+          <Text style={styles.healthTitle}>Frecuencia cardíaca</Text>
+          <Text style={styles.healthValue}>75 bpm</Text>
         </View>
         <View style={[styles.healthCard, styles.cardTeal]}>
-          <Image source={require('../assets/corazon.png')} style={styles.iconSmall} />
+          <Text style={styles.healthTitle}>Presión arterial</Text>
           <Text style={styles.healthValue}>180/110</Text>
-          <Text style={styles.healthLabel}>Presión arterial</Text>
         </View>
         <View style={[styles.healthCard, styles.cardRed]}>
-          <Image source={require('../assets/Peso.png')} style={styles.iconSmall} />
-          <Text style={styles.healthValue}>96</Text>
-          <Text style={styles.healthLabel}>Peso (kg)</Text>
+          <Text style={styles.healthTitle}>Peso</Text>
+          <Text style={styles.healthValue}>96 kg</Text>
         </View>
         <View style={[styles.healthCard, styles.cardYellow]}>
-          <Image source={require('../assets/Gota.png')} style={styles.iconSmall} />
-          <Text style={styles.healthValue}>110</Text>
-          <Text style={styles.healthLabel}>Glucosa (mg/dl)</Text>
+          <Text style={styles.healthTitle}>Glucosa</Text>
+          <Text style={styles.healthValue}>110 mg/dl</Text>
         </View>
       </ScrollView>
+      <TouchableOpacity onPress={() => navigation.navigate('HealthPage')}>
+        <Text style={styles.addButton}>+ Añadir nuevo</Text>
+      </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Tu medicación</Text>
+      <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Tu medicación</Text>
+      <Text style={styles.subText}>Lunes 26 enero</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.medicationContainer}>
-        <View style={[styles.medicationCard, styles.selectedMedication]}>
-          <View style={styles.medicationHeader}>
-            <View style={[styles.dot, { backgroundColor: 'green' }]} />
-            <Text style={styles.medicationTime}>10:00</Text>
-          </View>
-          <Text style={styles.medicationName}>Paracetamol</Text>
-          <View style={styles.checkboxSelected} />
-        </View>
-        <View style={styles.medicationCard}>
-          <View style={styles.medicationHeader}>
-            <View style={[styles.dot, { backgroundColor: 'purple' }]} />
-            <Text style={styles.medicationTime}>10:45</Text>
-          </View>
-          <Text style={styles.medicationName}>Enalapril</Text>
-          <View style={styles.checkbox} />
-        </View>
-        <View style={styles.medicationCard}>
-          <View style={styles.medicationHeader}>
-            <View style={[styles.dot, { backgroundColor: 'orange' }]} />
-            <Text style={styles.medicationTime}>11:30</Text>
-          </View>
-          <Text style={styles.medicationName}>Diálisis</Text>
-          <View style={styles.checkbox} />
-        </View>
+        {meds.map((med) => (
+          <TouchableOpacity
+            key={med.id}
+            style={[styles.medCard, med.taken && styles.medCardTaken]}
+            onPress={() => toggleMedication(med.id)}
+          >
+            <View style={styles.medContent}>
+              <View style={[styles.medCircle, { backgroundColor: med.color }]} />
+              <View>
+                <Text style={styles.medTime}>{med.time}</Text>
+                <Text style={styles.medName}>{med.name}</Text>
+              </View>
+            </View>
+            <MaterialIcons name={med.taken ? 'check-box' : 'check-box-outline-blank'} size={24} color={med.taken ? 'green' : 'black'} style={styles.checkbox} />
+          </TouchableOpacity>
+        ))}
       </ScrollView>
+      <TouchableOpacity onPress={() => navigation.navigate('AddMedication')}>
+        <Text style={styles.addButton}>+ Añadir nuevo</Text>
+      </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Citas médicas</Text>
-      <View style={styles.appointmentCard}>
-        <Text>Próxima cita: Cardiología - Hospital Universitario</Text>
-        <TouchableOpacity style={styles.button}><Text style={styles.buttonText}>Confirmar</Text></TouchableOpacity>
-      </View>
+      <MedicalAppointments />
     </ScrollView>
   );
 };
 
+const appointments = [
+  { id: 1, department: 'Cardiología', hospital: 'Hospital Universitario de Madrid', date: 'Lunes, 12 de Mayo', time: '11:00 AM' },
+  { id: 2, department: 'Nefrología', hospital: 'Clínica Santa María', date: 'Martes, 20 de Junio', time: '09:30 AM' },
+  { id: 3, department: 'Endocrinología', hospital: 'Hospital La Paz', date: 'Viernes, 5 de Julio', time: '16:00 PM' }
+];
+
+const MedicalAppointments = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextAppointment = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % appointments.length);
+  };
+
+  const prevAppointment = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + appointments.length) % appointments.length);
+  };
+
+  return (
+    <View style={styles.appointmentContainer}>
+      <Text style={styles.sectionTitle}>Citas médicas</Text>
+      <View style={styles.appointmentCard}>
+        <View style={styles.appointmentHeader}>
+          <Ionicons name="calendar-outline" size={20} color="#3E3E3E" />
+          <Text style={styles.appointmentTitle}>Próximas citas</Text>
+        </View>
+        <Text style={styles.department}>{appointments[currentIndex].department} • {appointments[currentIndex].hospital}</Text>
+        <View style={styles.dateContainer}>
+          <TouchableOpacity onPress={prevAppointment}>
+            <Ionicons name="chevron-back-outline" size={24} color="#3E3E3E" />
+          </TouchableOpacity>
+          <View style={styles.dateBox}>
+            <Text style={styles.dateText}>{appointments[currentIndex].date}</Text>
+            <View style={styles.timeContainer}>
+              <Ionicons name="time-outline" size={16} color="#3E3E3E" />
+              <Text style={styles.timeText}>{appointments[currentIndex].time}</Text>
+            </View>
+          </View>
+          <TouchableOpacity onPress={nextAppointment}>
+            <Ionicons name="chevron-forward-outline" size={24} color="#3E3E3E" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+// Estilos combinados e integrados
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  greeting: {
-    fontSize: 24,
-    color: '#22499C',
-  },
-  bold: {
-    fontWeight: 'bold',
-  },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 20,
-    color: '#22499C',
-  },
-  healthValuesContainer: {
-    flexDirection: 'row',
-    marginTop: 10,
-  },
-  medicationContainer: {
-    flexDirection: 'row',
-    marginTop: 10,
-  },
-  medicationCard: {
-    backgroundColor: '#F6F7FB',
-    padding: 15,
-    borderRadius: 10,
-    marginRight: 10,
-    width: 140,
-    height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  selectedMedication: {
-    backgroundColor: '#E3E7FF',
-  },
-  medicationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 5,
-  },
-  medicationTime: {
-    fontSize: 12,
-    color: '#6C757D',
-  },
-  medicationName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  checkbox: {
-    width: 16,
-    height: 16,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#6C757D',
-    position: 'absolute',
-    right: 10,
-    top: 10,
-  },
+  container: { backgroundColor: '#FAFAFA', padding: 20 },
 
-  cardBlue: { backgroundColor: '#D7E3FC' },
-  cardTeal: { backgroundColor: '#BFE9DB' },
-  cardRed: { backgroundColor: '#FCCAC2' },
-  cardYellow: { backgroundColor: '#F7E8A4' },
-  iconSmall: {
-    width: 20,
-    height: 20,
-    marginBottom: 5,
-  },
+  // Header
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
+  greeting: { fontSize: 36, color: '#161B43', fontFamily: 'Inter-Regular' },
+  userName: { fontWeight: '600', fontFamily: 'Inter-SemiBold' },
+  avatar: { width: 50, height: 50, borderRadius: 25 },
 
+  // Section Titles
+  sectionTitle: { fontSize: 20, color: '#3E3E3E', fontWeight: '600', marginBottom: 12 },
 
-  checkboxSelected: {
-    width: 16,
-    height: 16,
-    borderRadius: 4,
-    backgroundColor: '#22499C',
-    position: 'absolute',
-    right: 10,
-    top: 10,
-  },
-  button: {
-    backgroundColor: '#22499C',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-  },
+  // Health Values
+  healthValuesContainer: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  healthCard: { padding: 15, borderRadius: 8, width: 100, alignItems: 'center', justifyContent: 'center', marginRight: 8 },
+  healthTitle: { fontSize: 12, color: '#3E3E3E' },
+  healthValue: { fontSize: 20, fontWeight: 'bold', color: '#161B43' },
+  cardBlue: { backgroundColor: '#E3F2FD' },
+  cardTeal: { backgroundColor: '#E8F5E9' },
+  cardRed: { backgroundColor: '#FFEBEE' },
+  cardYellow: { backgroundColor: '#FFF9C4' },
+
+  // Medication
+  medicationContainer: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  medCard: { backgroundColor: '#FFFFFF', padding: 15, borderRadius: 8, width: 168, height: 94, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, marginRight: 10 },
+  medCardTaken: { backgroundColor: '#E3E7FF' },
+  medContent: { flexDirection: 'row', alignItems: 'center' },
+  medCircle: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
+  medTime: { fontSize: 14, fontWeight: '600', color: '#3E3E3E' },
+  medName: { fontSize: 16, fontWeight: 'bold', color: '#161B43' },
+
+  checkbox: { marginLeft: 'auto' },
+
+  // Appointments
+  appointmentContainer: { marginTop: 32 },
+  appointmentCard: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
+  appointmentHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
+  appointmentTitle: { fontSize: 18, fontWeight: 'bold', marginLeft: 8, color: '#3E3E3E' },
+  department: { color: '#6D6D6D', marginBottom: 10 },
+  dateContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#E3F2FD', padding: 10, borderRadius: 8, marginBottom: 12 }
 });
-
 export default HomePage;
