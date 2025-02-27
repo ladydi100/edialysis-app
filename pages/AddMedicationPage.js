@@ -208,23 +208,34 @@ const AddMedicationPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
+    backgroundColor: '#F8F9FC', // Fondo similar al de la imagen
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 48,
+    borderColor: '#E0E0E0',
     borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFFFFF',
     marginBottom: 12,
-    paddingHorizontal: 8,
+    fontSize: 16,
+    color: '#333',
   },
   frequencyContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
     marginBottom: 12,
   },
   frequencyText: {
     fontSize: 16,
+    color: '#333',
   },
   modalContainer: {
     flex: 1,
@@ -232,68 +243,90 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
- calendarContainer: {
+  calendarContainer: {
     backgroundColor: 'white',
-    padding: 10, // Reducir el padding
-    borderRadius: 10,
-    width: '95%', // Ajustar el ancho del calendario
-    maxWidth: 400, // Ancho máximo para pantallas grandes
+    padding: 20,
+    borderRadius: 15,
+    width: '90%',
+    maxWidth: 400,
   },
   timeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
     marginBottom: 12,
+  },
+  timeTag: {
+    backgroundColor: '#E5E7EB',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    fontSize: 16,
+    color: '#333',
+    marginRight: 6,
+    marginBottom: 6,
+  },
+  addTimeButton: {
+    backgroundColor: '#E5E7EB',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 16,
+    color: '#333',
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 20,
   },
-
-
-
- colorContainer: {
+  colorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
     marginBottom: 12,
   },
   colorLabel: {
     fontSize: 16,
-    marginRight: 10,
+    color: '#333',
+    flex: 1,
   },
   colorCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    marginLeft: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
   },
-  navText: {
-    fontSize: 18, // Reducir el tamaño del texto
-    color: '#007AFF',
-    marginHorizontal: 10, // Espacio entre flechas y título
-  },
-monthTitle: {
-    fontSize: 16, // Tamaño del texto del mes
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  yearTitle: {
-    fontSize: 14, // Tamaño del texto del año
-    color: '#000',
-  },
-  headerWrapper: {
+  buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10, // Espacio interno
-    width: '100%', // Asegurar que ocupe todo el ancho
+    marginTop: 20,
   },
-
-
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#E5E7EB',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: '#4F46E5',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
 });
-
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
@@ -301,21 +334,22 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'black',
-    paddingRight: 30,
+    borderColor: '#E0E0E0',
+    borderRadius: 10,
+    color: '#333',
+    backgroundColor: '#FFFFFF',
   },
   inputAndroid: {
     fontSize: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: 'gray',
-    borderRadius: 8,
-    color: 'black',
-    paddingRight: 30,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 10,
+    color: '#333',
+    backgroundColor: '#FFFFFF',
   },
 });
+
 
 export default AddMedicationPage;
