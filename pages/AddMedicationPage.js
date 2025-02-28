@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Switch, ScrollView, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import CalendarPicker from 'react-native-calendar-picker';
 import RNPickerSelect from 'react-native-picker-select';
 import { addMedication } from '../services/medicationService';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 
 
 const colors = [
@@ -18,32 +16,41 @@ const colors = [
 ];
 
 
+
+const daysOfWeek = [
+  { label: 'Lunes', value: 'Monday' },
+  { label: 'Martes', value: 'Tuesday' },
+  { label: 'Miércoles', value: 'Wednesday' },
+  { label: 'Jueves', value: 'Thursday' },
+  { label: 'Viernes', value: 'Friday' },
+  { label: 'Sábado', value: 'Saturday' },
+  { label: 'Domingo', value: 'Sunday' },
+];
+
+
 const AddMedicationPage = ({ navigation }) => {
   const [medicationName, setMedicationName] = useState('');
   const [dosage, setDosage] = useState('');
   const [time, setTime] = useState(new Date());
-  //const [color, setColor] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [notes, setNotes] = useState('');
   const [alarmEnabled, setAlarmEnabled] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showCalendarModal, setShowCalendarModal] = useState(false); // Estado para mostrar/ocultar el calendario
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const [times, setTimes] = useState([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedTimeIndex, setSelectedTimeIndex] = useState(null);
+  const [selectedDays, setSelectedDays] = useState([]); 
+  const [showDaysModal, setShowDaysModal] = useState(false);
+
 
   const handleSave = async () => {
     const medicationData = {
       name: medicationName,
-      startDate: startDate ? startDate.toISOString() : null,
-      endDate: endDate ? endDate.toISOString() : null,
       dosage,
       times: times.map(t => t.toISOString()),
       color: selectedColor,
       notes,
       alarmEnabled,
+      days: selectedDays,
     };
 
     try {
@@ -68,18 +75,19 @@ const AddMedicationPage = ({ navigation }) => {
     }
   };
 
-  const onDateChange = (date, type) => {
-    if (type === 'END_DATE') {
-      setEndDate(date);
-    } else {
-      setStartDate(date);
-      setEndDate(date);
-    }
-  };
 
   const handleDeleteTime = (index) => {
     const updatedTimes = times.filter((_, i) => i !== index);
     setTimes(updatedTimes);
+  };
+
+
+   const toggleDay = (day) => {
+    if (selectedDays.includes(day)) {
+      setSelectedDays(selectedDays.filter(d => d !== day)); 
+    } else {
+      setSelectedDays([...selectedDays, day]); 
+    }
   };
 
   return (
@@ -92,42 +100,48 @@ const AddMedicationPage = ({ navigation }) => {
         style={styles.input}
       />
 
-      {/* Frecuencia de uso con ícono de calendario */}
-      <TouchableOpacity
-        style={styles.frequencyContainer}
-        onPress={() => setShowCalendarModal(true)}
+
+  {/* Frecuencia de uso: Selección de días de la semana */}
+      <View style={styles.section}>
+        <TouchableOpacity onPress={() => setShowDaysModal(true)} style={styles.calendarIconContainer}>
+          <Text style={styles.sectionTitle}>Frecuencia de uso</Text>
+          <Icon name="calendar" size={24} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.selectedDaysText}>
+          Días seleccionados: {selectedDays.join(', ')}
+        </Text>
+      </View>
+
+       <Modal
+        visible={showDaysModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowDaysModal(false)}
       >
-        <Text style={styles.frequencyText}>Frecuencia de uso</Text>
-        <Icon name="calendar" size={20} color="#000" />
-      </TouchableOpacity>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Selecciona los días</Text>
+            {daysOfWeek.map((day, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.dayButton,
+                  selectedDays.includes(day.value) && styles.dayButtonSelected
+                ]}
+                onPress={() => toggleDay(day.value)}
+              >
+                <Text style={styles.dayButtonText}>{day.label}</Text>
+              </TouchableOpacity>
+            ))}
+            <Button title="Cerrar" onPress={() => setShowDaysModal(false)} />
+          </View>
+        </View>
+      </Modal>
 
-      {/* Mostrar fechas seleccionadas */}
-      {startDate && <Text>Fecha de inicio: {startDate.toDateString()}</Text>}
-      {endDate && <Text>Fecha de fin: {endDate.toDateString()}</Text>}
 
-      {/* Modal para el calendario */}
-     <Modal
-  visible={showCalendarModal}
-  transparent={true}
-  animationType="slide"
-  onRequestClose={() => setShowCalendarModal(false)}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.calendarContainer}>
-      <CalendarPicker
-        startFromMonday={true}
-        allowRangeSelection={true}
-        onDateChange={onDateChange}
-        previousComponent={<Text style={styles.navText}>‹</Text>} // Flecha izquierda
-        nextComponent={<Text style={styles.navText}>›</Text>} // Flecha derecha
-        monthTitleStyle={styles.monthTitle} // Estilo para el título del mes
-        yearTitleStyle={styles.yearTitle} // Estilo para el año
-        headerWrapperStyle={styles.headerWrapper} // Estilo para el contenedor del encabezado
-      />
-      <Button title="Cerrar" onPress={() => setShowCalendarModal(false)} />
-    </View>
-  </View>
-</Modal>
+
+
+
 
       {/* Dosis */}
       <TextInput
@@ -205,6 +219,7 @@ const AddMedicationPage = ({ navigation }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -217,27 +232,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 8,
   },
-  frequencyContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
+  section: {
+    marginBottom: 20,
   },
-  frequencyText: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  dayButton: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  dayButtonSelected: {
+    backgroundColor: '#a0a0a0',
+  },
+  dayButtonText: {
     fontSize: 16,
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
- calendarContainer: {
-    backgroundColor: 'white',
-    padding: 10, // Reducir el padding
-    borderRadius: 10,
-    width: '95%', // Ajustar el ancho del calendario
-    maxWidth: 400, // Ancho máximo para pantallas grandes
+  selectedDaysText: {
+    marginTop: 10,
+    fontStyle: 'italic',
   },
   timeContainer: {
     flexDirection: 'row',
@@ -251,10 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 12,
   },
-
-
-
- colorContainer: {
+  colorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
@@ -269,30 +284,31 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginLeft: 10,
   },
-  navText: {
-    fontSize: 18, // Reducir el tamaño del texto
-    color: '#007AFF',
-    marginHorizontal: 10, // Espacio entre flechas y título
-  },
-monthTitle: {
-    fontSize: 16, // Tamaño del texto del mes
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  yearTitle: {
-    fontSize: 14, // Tamaño del texto del año
-    color: '#000',
-  },
-  headerWrapper: {
+  calendarIconContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10, // Espacio interno
-    width: '100%', // Asegurar que ocupe todo el ancho
+    justifyContent: 'space-between',
   },
-
-
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
 });
+
 
 
 const pickerSelectStyles = StyleSheet.create({
