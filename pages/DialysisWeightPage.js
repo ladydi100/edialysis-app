@@ -1,6 +1,6 @@
 // DialysisWeightPage.js - Página para ingresar el peso seco
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const DialysisWeightPage = () => {
@@ -17,29 +17,33 @@ const DialysisWeightPage = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>¿Cuál es el objetivo de tu peso seco?</Text>
-      <Text style={styles.description}>
-        Introduce el peso que debes alcanzar después de cada tratamiento de diálisis. 
-        También puede llamarse "peso seco". Si no lo sabes, consúltalo con tu nefrólogo.
-      </Text>
-      
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="70"
-          placeholderTextColor="#898483"
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={setWeight}
-        />
-        <Text style={styles.unit}>kg</Text>
-      </View>
-      
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.buttonText}>Guardar</Text>
-      </TouchableOpacity>
-    </View>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <Text style={styles.title}>¿Cuál es el objetivo de tu peso seco?</Text>
+          <Text style={styles.description}>
+            Introduce el peso que debes alcanzar después de cada tratamiento de diálisis.
+            También puede llamarse "peso seco". Si no lo sabes, consúltalo con tu nefrólogo.
+          </Text>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="70"
+              placeholderTextColor="#898483"
+              keyboardType="numeric"
+              value={weight}
+              onChangeText={setWeight}
+            />
+            <Text style={styles.unit}>kg</Text>
+          </View>
+
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.buttonText}>Guardar</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
