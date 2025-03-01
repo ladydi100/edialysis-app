@@ -12,7 +12,9 @@ import AddMedicationPage from '../pages/AddMedicationPage';
 import DialysisPage from '../pages/DialysisPage';
 import DialysisSetupPage from '../pages/DialysisSetupPage';
 import DialysisStartDatePage from '../pages/DialysisStartDatePage';
-import DialysisDaysPage from '../pages/DialysisDaysPage'; // Nueva pantalla agregada
+import DialysisDaysPage from '../pages/DialysisDaysPage'; 
+import DialysisWeightPage from '../pages/DialysisWeightPage';
+import DialysisRemindersPage from '../pages/DialysisRemindersPage';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +30,10 @@ export default function AppNavigator() {
           <Stack.Screen name="DialysisSetupPage" component={DialysisSetupPage} />
           <Stack.Screen name="DialysisStartDatePage" component={DialysisStartDatePage} />
           <Stack.Screen name="DialysisDaysPage" component={DialysisDaysPage} />
+          <Stack.Screen name="DialysisWeightPage" component={DialysisWeightPage} />
+          <Stack.Screen name="DialysisRemindersPage" component={DialysisRemindersPage} />
+
+
         </>
       ) : (
         <>
