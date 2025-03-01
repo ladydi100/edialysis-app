@@ -1,65 +1,58 @@
 // DialysisRemindersPage.js - Página para configurar recordatorios de diálisis
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Switch, StyleSheet, FlatList, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Notifications from 'expo-notifications';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const DialysisRemindersPage = () => {
   const navigation = useNavigation();
-  const [reminders, setReminders] = useState([]);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const route = useRoute();
+  const { selectedDays } = route.params || { selectedDays: [] };
+  const [reminders, setReminders] = useState(
+    selectedDays.reduce((acc, day) => ({ ...acc, [day]: null }), {})
+  );
+  const [selectedDay, setSelectedDay] = useState(null);
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     Notifications.requestPermissionsAsync();
   }, []);
 
-  const handleAddReminder = () => {
-    setReminders([...reminders, selectedTime]);
-    scheduleNotification(selectedTime);
+  const handleSetReminder = (day) => {
+    setSelectedDay(day);
+    setShowTimePicker(true);
   };
 
-  const handleRemoveReminder = (index) => {
-    const updatedReminders = reminders.filter((_, i) => i !== index);
-    setReminders(updatedReminders);
-  };
-
-  const scheduleNotification = async (time) => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Recordatorio de Diálisis",
-        body: "Es hora de tu sesión de diálisis",
-      },
-      trigger: { hour: time.getHours(), minute: time.getMinutes(), repeats: true },
-    });
+  const onChangeTime = (event, selectedDate) => {
+    if (selectedDate && selectedDay) {
+      setReminders((prev) => ({ ...prev, [selectedDay]: selectedDate }));
+    }
+    setShowTimePicker(false);
   };
 
   const handleSave = () => {
-    navigation.navigate('DialysisConfirmationPage');
+    navigation.navigate('DialysisPage', { reminders });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Activa tus recordatorios diarios</Text>
+      <Text style={styles.title}>Configura tus recordatorios</Text>
       <Text style={styles.description}>
-        Configura recordatorios para medir y registrar tus parámetros vitales antes y después de la diálisis.
+        Elige la hora de diálisis para cada día seleccionado.
       </Text>
       
       <FlatList
-        data={reminders}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
+        data={selectedDays}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
           <View style={styles.reminderItem}>
-            <Text style={styles.reminderText}>{item.toLocaleTimeString()}</Text>
-            <Button title="Eliminar" onPress={() => handleRemoveReminder(index)} />
+            <Text style={styles.reminderText}>{item}</Text>
+            <Button title={reminders[item] ? reminders[item].toLocaleTimeString() : 'Seleccionar hora'} onPress={() => handleSetReminder(item)} />
           </View>
         )}
       />
-      
-      <TouchableOpacity style={styles.addButton} onPress={() => setShowTimePicker(true)}>
-        <Text style={styles.buttonText}>Añadir Recordatorio</Text>
-      </TouchableOpacity>
       
       {showTimePicker && (
         <DateTimePicker
@@ -67,15 +60,16 @@ const DialysisRemindersPage = () => {
           mode="time"
           is24Hour={true}
           display="default"
-          onChange={(event, selectedDate) => {
-            setShowTimePicker(false);
-            if (selectedDate) setSelectedTime(selectedDate);
-          }}
+          onChange={onChangeTime}
         />
       )}
       
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.buttonText}>Guardar</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('DialysisPage', { reminders: {} })}>
+        <Text style={styles.buttonText}>Saltar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -110,15 +104,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#101432',
   },
-  addButton: {
+  saveButton: {
     backgroundColor: '#3B49B4',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 10,
   },
-  saveButton: {
-    backgroundColor: '#00A86B',
+  skipButton: {
+    backgroundColor: '#898483',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -131,3 +125,4 @@ const styles = StyleSheet.create({
 });
 
 export default DialysisRemindersPage;
+
