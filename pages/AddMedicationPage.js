@@ -53,6 +53,9 @@ const AddMedicationPage = ({ navigation }) => {
       days: selectedDays,
     };
 
+    
+
+
     try {
       await addMedication(medicationData);
       navigation.goBack();
@@ -61,6 +64,10 @@ const AddMedicationPage = ({ navigation }) => {
       alert('Error al guardar el medicamento');
     }
   };
+
+
+
+
 
   const onChangeTime = (event, selectedDate) => {
     const currentDate = selectedDate || time;

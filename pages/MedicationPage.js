@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+
 const medications = [
   { id: '1', time: '10:00', name: 'Paracetamol', dosage: 'Tomar media pastilla (100g)', completed: true, color: 'green' },
   { id: '2', time: '10:45', name: 'Enalapril', dosage: 'Tomar pastilla entera', completed: true, color: 'purple' },

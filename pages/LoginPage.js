@@ -2,12 +2,13 @@ import React, { useState, useContext } from 'react';
 import { View, TextInput, Alert, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { loginUser } from '../services/authService';  // servicio loginUser
 import { AuthContext } from '../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
-
+/*
   const handleLogin = async () => {
     try {
       const userData = await loginUser(email, password);
@@ -16,7 +17,19 @@ const LoginPage = ({ navigation }) => {
     } catch (error) {
       Alert.alert('Error', error.message);
     }
-  };
+  };*/
+
+const handleLogin = async () => {
+  try {
+    const userData = await loginUser(email, password);
+    login(userData.token); // Guardar el token en el estado de autenticación
+    await AsyncStorage.setItem('userToken', userData.token); // Guardar el token en AsyncStorage
+    navigation.navigate('Main'); // Redirigir al usuario al BottomTabNavigator
+  } catch (error) {
+    Alert.alert('Error', error.message);
+  }
+};
+
 
   return (
     <View style={styles.container}>
