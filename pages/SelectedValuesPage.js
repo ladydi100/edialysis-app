@@ -1,5 +1,4 @@
-// SelectedValuesPage.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
@@ -7,8 +6,18 @@ const SelectedValuesPage = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
-  // Recuperar los valores seleccionados de la pantalla anterior
+  // Recuperar los valores seleccionados y los valores actualizados
   const { selectedParameters = [] } = route.params || {};
+  const [values, setValues] = useState(route.params?.updatedValues || {});
+
+  useEffect(() => {
+    if (route.params?.updatedValues) {
+      setValues(prevValues => ({
+        ...prevValues,
+        ...route.params.updatedValues // Mantener valores previos y actualizar nuevos
+      }));
+    }
+  }, [route.params?.updatedValues]);
 
   // Mapear IDs de parámetros con nombres de pantalla y etiquetas
   const parameterScreenMap = {
@@ -24,7 +33,10 @@ const SelectedValuesPage = () => {
   };
 
   const goToParameterPage = (parameterId) => {
-    navigation.navigate(parameterScreenMap[parameterId]);
+    navigation.navigate(parameterScreenMap[parameterId], {
+      selectedParameters,
+      updatedValues: values,
+    });
   };
 
   return (
@@ -37,11 +49,12 @@ const SelectedValuesPage = () => {
           style={styles.paramButton}
           onPress={() => goToParameterPage(paramId)}
         >
-          <Text style={styles.paramText}>{parameterLabelMap[paramId]}</Text>
+          <Text style={styles.paramText}>
+            {parameterLabelMap[paramId]}: {values[paramId] || 'No ingresado'}
+          </Text>
         </TouchableOpacity>
       ))}
 
-      {/* Aquí podrías agregar un gráfico si lo deseas */}
       <View style={styles.graphContainer}>
         <Text style={styles.graphPlaceholder}>
           Aquí podrías mostrar un gráfico de ejemplo

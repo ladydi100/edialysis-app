@@ -1,12 +1,10 @@
-// SelectValuesPage.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const SelectValuesPage = () => {
   const navigation = useNavigation();
-
-  // Estado para almacenar los parámetros seleccionados
   const [selectedParameters, setSelectedParameters] = useState([]);
 
   // Lista de parámetros disponibles
@@ -32,51 +30,40 @@ const SelectValuesPage = () => {
       return;
     }
 
-    navigation.navigate('SelectedValues', {
-      selectedParameters,
-    });
+    navigation.navigate('SelectedValues', { selectedParameters });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Valores de salud</Text>
-      <Text style={styles.subtitle}>Añade los resultados que quieres registrar</Text>
-      <Text style={styles.subtitle}>Selecciona al menos 1 valor</Text>
+      <Text style={styles.title}>¿Qué valores deseas seguir?</Text>
+      <Text style={styles.subtitle}>
+        Selecciona los valores que deseas monitorizar y registrar.
+      </Text>
 
-      <View style={styles.parametersContainer}>
+      <View style={styles.listContainer}>
         {availableParameters.map((param) => {
           const isSelected = selectedParameters.includes(param.id);
           return (
             <TouchableOpacity
               key={param.id}
-              style={[
-                styles.parameterButton,
-                isSelected && styles.selectedButton,
-              ]}
+              style={[styles.listItem, isSelected && styles.selectedItem]}
               onPress={() => toggleParameter(param.id)}
             >
-              <Text
-                style={[
-                  styles.parameterText,
-                  isSelected && styles.selectedText,
-                ]}
-              >
-                {param.label}
-              </Text>
+              <View style={[styles.checkbox, isSelected && styles.checkedBox]}>
+                {isSelected && <Icon name="checkmark" size={18} color="#FAFAFA" />}
+              </View>
+              <Text style={[styles.itemText, isSelected && styles.selectedText]}>{param.label}</Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
       <TouchableOpacity
-        style={[
-          styles.continueButton,
-          selectedParameters.length === 0 && { backgroundColor: '#ccc' },
-        ]}
+        style={[styles.continueButton, selectedParameters.length === 0 && { backgroundColor: '#ccc' }]}
         onPress={handleContinue}
         disabled={selectedParameters.length === 0}
       >
-        <Text style={styles.continueButtonText}>Continuar</Text>
+        <Text style={styles.continueButtonText}>Siguiente</Text>
       </TouchableOpacity>
     </View>
   );
@@ -94,45 +81,60 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#101432',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
     color: '#5A5555',
-    marginBottom: 8,
+    marginBottom: 20,
   },
-  parametersContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginVertical: 16,
-  },
-  parameterButton: {
-    borderWidth: 1,
-    borderColor: '#3B49B4',
-    borderRadius: 20,
+  listContainer: {
+    backgroundColor: '#FAFAFA',
+    borderRadius: 10,
     paddingVertical: 10,
-    paddingHorizontal: 15,
-    marginRight: 10,
-    marginBottom: 10,
   },
-  parameterText: {
-    color: '#3B49B4',
-    fontSize: 14,
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#FAFAFA',
   },
-  selectedButton: {
-    backgroundColor: '#3B49B4',
+  selectedItem: {
+    backgroundColor: '#D7DAF2',
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: '#3B49B4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+    backgroundColor: 'transparent', // Checkbox sin seleccionar: transparente
+  },
+  checkedBox: {
+    backgroundColor: '#3B49B4', // Checkbox seleccionado: azul corporativo
+  },
+  itemText: {
+    fontSize: 16,
+    color: '#101432',
   },
   selectedText: {
-    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   continueButton: {
     backgroundColor: '#3B49B4',
-    paddingVertical: 14,
-    borderRadius: 8,
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
+    marginTop: 20,
   },
   continueButtonText: {
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     fontSize: 16,
     fontWeight: 'bold',
   },

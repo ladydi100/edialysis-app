@@ -1,19 +1,29 @@
-// BloodPressurePage.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Switch, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const BloodPressurePage = () => {
   const navigation = useNavigation();
-  
+  const route = useRoute();
+
   const [systolic, setSystolic] = useState('');
   const [diastolic, setDiastolic] = useState('');
   const [notes, setNotes] = useState('');
   const [connectAppleHealth, setConnectAppleHealth] = useState(false);
 
   const handleSave = () => {
-    alert('Datos guardados correctamente');
-    navigation.goBack();
+    if (!systolic || !diastolic) {
+      alert('Por favor, introduce valores válidos.');
+      return;
+    }
+
+    navigation.navigate('SelectedValues', {
+      selectedParameters: route.params?.selectedParameters || [],
+      updatedValues: {
+        ...route.params?.updatedValues,
+        bloodPressure: `${systolic}/${diastolic} mmHg`
+      }
+    });
   };
 
   return (
@@ -40,25 +50,6 @@ const BloodPressurePage = () => {
           keyboardType="numeric"
           value={diastolic}
           onChangeText={setDiastolic}
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Notas importantes</Text>
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          placeholder="Ingresa tus notas aquí"
-          multiline
-          value={notes}
-          onChangeText={setNotes}
-        />
-      </View>
-
-      <View style={styles.switchContainer}>
-        <Text style={styles.label}>Conectar con Apple Health</Text>
-        <Switch
-          value={connectAppleHealth}
-          onValueChange={setConnectAppleHealth}
         />
       </View>
 
@@ -102,14 +93,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 10,
     borderRadius: 8,
-  },
-  notesInput: {
-    height: 80,
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 30,
   },
   saveButton: {
     backgroundColor: '#3B49B4',

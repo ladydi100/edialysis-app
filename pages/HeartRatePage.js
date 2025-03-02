@@ -1,55 +1,38 @@
-// HeartRatePage.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Switch, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const HeartRatePage = () => {
   const navigation = useNavigation();
+  const route = useRoute();
 
   const [heartRate, setHeartRate] = useState('');
-  const [notes, setNotes] = useState('');
-  const [connectAppleHealth, setConnectAppleHealth] = useState(false);
 
   const handleSave = () => {
-    alert('Frecuencia cardíaca guardada correctamente');
-    navigation.goBack();
+    if (!heartRate) {
+      alert('Por favor, introduce un valor válido.');
+      return;
+    }
+
+    navigation.navigate('SelectedValues', {
+      selectedParameters: route.params?.selectedParameters || [],
+      updatedValues: {
+        ...route.params?.updatedValues,
+        heartRate: `${heartRate} bpm`
+      }
+    });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Frecuencia cardíaca</Text>
-      <Text style={styles.dateText}>Lunes 26 enero · 12:32</Text>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Frecuencia cardíaca (lpm)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ej: 70"
-          keyboardType="numeric"
-          value={heartRate}
-          onChangeText={setHeartRate}
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Notas importantes</Text>
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          placeholder="Ingresa tus notas aquí"
-          multiline
-          value={notes}
-          onChangeText={setNotes}
-        />
-      </View>
-
-      <View style={styles.switchContainer}>
-        <Text style={styles.label}>Conectar con Apple Health</Text>
-        <Switch
-          value={connectAppleHealth}
-          onValueChange={setConnectAppleHealth}
-        />
-      </View>
-
+      <Text style={styles.title}>Frecuencia Cardíaca</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ej: 70"
+        keyboardType="numeric"
+        value={heartRate}
+        onChangeText={setHeartRate}
+      />
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Guardar datos</Text>
       </TouchableOpacity>
@@ -71,19 +54,6 @@ const styles = StyleSheet.create({
     color: '#101432',
     marginBottom: 8,
   },
-  dateText: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 20,
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    color: '#101432',
-    marginBottom: 5,
-  },
   input: {
     backgroundColor: '#fff',
     borderWidth: 1,
@@ -91,19 +61,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
   },
-  notesInput: {
-    height: 80,
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 30,
-  },
   saveButton: {
     backgroundColor: '#3B49B4',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
+    marginTop: 20,
   },
   saveButtonText: {
     color: '#fff',
