@@ -19,13 +19,14 @@ const HealthPage = () => {
             </View>
 
             {/* Opciones de salud */}
-            <TouchableOpacity style={styles.option} onPress={() => alert('Ir a Valores de Salud')}>
+            <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('HealthValuesPage')}>
                 <Icon name="heart" size={24} color="#3B49B4" style={styles.icon} />
                 <View>
                     <Text style={styles.optionTitle}>Valores</Text>
                     <Text style={styles.optionSubtitle}>Introduce tus resultados</Text>
                 </View>
             </TouchableOpacity>
+
 
             <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('DialysisPage')}>
                 <Icon name="water" size={24} color="#3B49B4" style={styles.icon} />
