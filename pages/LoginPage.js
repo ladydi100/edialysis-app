@@ -24,7 +24,7 @@ const handleLogin = async () => {
     const userData = await loginUser(email, password);
     login(userData.token); // Guardar el token en el estado de autenticación
     await AsyncStorage.setItem('userToken', userData.token); // Guardar el token en AsyncStorage
-    navigation.navigate('Main'); // Redirigir al usuario al BottomTabNavigator
+    navigation.navigate('BottomTabNavigator'); // Ahora sí navega correctamente
   } catch (error) {
     Alert.alert('Error', error.message);
   }

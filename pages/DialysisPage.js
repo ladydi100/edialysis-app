@@ -15,7 +15,7 @@ const DialysisPage = () => {
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
-                <TouchableOpacity onPress={() => navigation.navigate('Main', { screen: 'Salud' })} style={styles.backButton}>
+                <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', { screen: 'Salud' })} style={styles.backButton}>
                     <Icon name="arrow-back" size={24} color="#101432" />
                 </TouchableOpacity>
             ),
