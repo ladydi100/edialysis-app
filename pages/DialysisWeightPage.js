@@ -9,8 +9,8 @@ const DialysisWeightPage = () => {
 
   const handleSave = () => {
     if (weight) {
-      // Guardar el peso ingresado y continuar al siguiente paso
-      navigation.navigate('DialysisRemindersPage', { weight });
+      // Guardar el peso ingresado y continuar a la selección de días de diálisis
+      navigation.navigate('DialysisDaysPage', { weight });
     } else {
       alert('Por favor, ingresa tu peso seco.');
     }
@@ -22,10 +22,10 @@ const DialysisWeightPage = () => {
         <View style={styles.container}>
           <Text style={styles.title}>¿Cuál es el objetivo de tu peso seco?</Text>
           <Text style={styles.description}>
-            Introduce el peso que debes alcanzar después de cada tratamiento de diálisis.
+            Introduce el peso que debes alcanzar después de cada tratamiento de diálisis. 
             También puede llamarse "peso seco". Si no lo sabes, consúltalo con tu nefrólogo.
           </Text>
-
+          
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -37,7 +37,7 @@ const DialysisWeightPage = () => {
             />
             <Text style={styles.unit}>kg</Text>
           </View>
-
+          
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.buttonText}>Guardar</Text>
           </TouchableOpacity>

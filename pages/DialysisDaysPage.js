@@ -1,10 +1,12 @@
 // DialysisDaysPage.js - Selección de días de diálisis
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const DialysisDaysPage = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { weight } = route.params || {};
   const [selectedDays, setSelectedDays] = useState([]);
 
   const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
@@ -19,7 +21,7 @@ const DialysisDaysPage = () => {
 
   const handleNext = () => {
     if (selectedDays.length > 0) {
-      navigation.navigate('DialysisRemindersPage', { selectedDays });
+      navigation.navigate('DialysisRemindersPage', { weight, selectedDays });
     } else {
       alert('Por favor, selecciona al menos un día.');
     }

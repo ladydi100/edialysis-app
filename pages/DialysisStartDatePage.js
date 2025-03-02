@@ -1,8 +1,8 @@
-// DialysisStartDatePage.js - Selección de la fecha de inicio del tratamiento
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const DialysisStartDatePage = () => {
     const navigation = useNavigation();
@@ -11,9 +11,14 @@ const DialysisStartDatePage = () => {
 
     return (
         <View style={styles.container}>
+           
+
             <Text style={styles.title}>¿Cuándo empezaste el tratamiento?</Text>
-            <Text style={styles.subtitle}>Selecciona la fecha en la que iniciaste tu tratamiento de diálisis.</Text>
+            <Text style={styles.subtitle}>
+                Selecciona la fecha en la que iniciaste tu tratamiento de diálisis.
+            </Text>
             
+            {/* Selector de fecha */}
             <TouchableOpacity style={styles.dateButton} onPress={() => setShowPicker(true)}>
                 <Text style={styles.dateText}>{date.toDateString()}</Text>
             </TouchableOpacity>
@@ -30,9 +35,10 @@ const DialysisStartDatePage = () => {
                 />
             )}
 
+            {/* Botón para avanzar a la siguiente pantalla (DialysisWeightPage) */}
             <TouchableOpacity 
                 style={styles.button} 
-                onPress={() => navigation.navigate('DialysisDaysPage', { startDate: date })}
+                onPress={() => navigation.navigate('DialysisWeightPage', { startDate: date })}
             >
                 <Text style={styles.buttonText}>Siguiente</Text>
             </TouchableOpacity>
@@ -47,16 +53,23 @@ const styles = StyleSheet.create({
         padding: 20,
         justifyContent: 'center',
     },
+    backButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+    },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         color: '#101432',
         marginBottom: 10,
+        textAlign: 'center',
     },
     subtitle: {
         fontSize: 16,
         color: '#5A5555',
         marginBottom: 20,
+        textAlign: 'center',
     },
     dateButton: {
         backgroundColor: '#E3E3E3',

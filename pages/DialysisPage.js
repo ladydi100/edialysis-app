@@ -1,12 +1,26 @@
-// DialysisPage.js - Página de Control de Diálisis
-import React from 'react';
+// DialysisPage.js - Página de Control de Diálisis sin almacenamiento persistente
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const DialysisPage = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { reminders } = route.params || { reminders: {} };
+    const { reminders: routeReminders, weight: routeWeight } = route.params || { reminders: {}, weight: null };
+
+    const [reminders, setReminders] = useState(routeReminders);
+    const [weight, setWeight] = useState(routeWeight);
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('Main', { screen: 'Salud' })} style={styles.backButton}>
+                    <Icon name="arrow-back" size={24} color="#101432" />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
     return (
         <ScrollView style={styles.container}>
@@ -18,10 +32,17 @@ const DialysisPage = () => {
 
             <TouchableOpacity 
                 style={styles.addButton}
-                onPress={() => navigation.navigate('DialysisDaysPage')}
+                onPress={() => navigation.navigate('DialysisSetupPage')}
             >
                 <Text style={styles.buttonText}>Añadir sesión</Text>
             </TouchableOpacity>
+
+            {weight && (
+                <View style={styles.weightContainer}>
+                    <Text style={styles.weightTitle}>Peso seco registrado</Text>
+                    <Text style={styles.weightText}>{weight} kg</Text>
+                </View>
+            )}
 
             <View style={styles.historyContainer}>
                 <Text style={styles.historyTitle}>Historial de sesiones</Text>
@@ -68,6 +89,22 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    weightContainer: {
+        padding: 15,
+        backgroundColor: '#E3E3E3',
+        borderRadius: 10,
+        marginBottom: 20,
+    },
+    weightTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#101432',
+    },
+    weightText: {
+        fontSize: 16,
+        color: '#101432',
+        marginTop: 5,
+    },
     historyContainer: {
         padding: 15,
         backgroundColor: '#E3E3E3',
@@ -92,6 +129,9 @@ const styles = StyleSheet.create({
         color: '#5A5555',
         fontSize: 14,
         marginTop: 10,
+    },
+    backButton: {
+        marginLeft: 15,
     },
 });
 

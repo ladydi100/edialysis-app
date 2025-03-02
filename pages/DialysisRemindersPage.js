@@ -8,7 +8,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 const DialysisRemindersPage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { selectedDays } = route.params || { selectedDays: [] };
+  const { selectedDays, weight } = route.params || { selectedDays: [], weight: null };
   const [reminders, setReminders] = useState(
     selectedDays.reduce((acc, day) => ({ ...acc, [day]: null }), {})
   );
@@ -33,7 +33,7 @@ const DialysisRemindersPage = () => {
   };
 
   const handleSave = () => {
-    navigation.navigate('DialysisPage', { reminders });
+    navigation.navigate('DialysisPage', { reminders, weight });
   };
 
   return (
@@ -68,7 +68,7 @@ const DialysisRemindersPage = () => {
         <Text style={styles.buttonText}>Guardar</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('DialysisPage', { reminders: {} })}>
+      <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('DialysisPage', { reminders: {}, weight })}>
         <Text style={styles.buttonText}>Saltar</Text>
       </TouchableOpacity>
     </View>
@@ -125,4 +125,3 @@ const styles = StyleSheet.create({
 });
 
 export default DialysisRemindersPage;
-
