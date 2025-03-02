@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-
 const medications = [
   { id: '1', time: '10:00', name: 'Paracetamol', dosage: 'Tomar media pastilla (100g)', completed: true, color: 'green' },
   { id: '2', time: '10:45', name: 'Enalapril', dosage: 'Tomar pastilla entera', completed: true, color: 'purple' },
@@ -10,8 +9,30 @@ const medications = [
 ];
 
 const MedicationPage = ({ navigation }) => {
+  // Estado para la fecha seleccionada
+  const [selectedDate, setSelectedDate] = useState(25);
+  const [currentWeek, setCurrentWeek] = useState([
+    { day: "Sab", date: 23 },
+    { day: "Dom", date: 24 },
+    { day: "Lun", date: 25 },
+    { day: "Mar", date: 26 },
+    { day: "Mie", date: 27 }
+  ]);
+
   const [medList, setMedList] = useState(medications);
 
+  // Función para cambiar de semana
+  const changeWeek = (direction) => {
+    setCurrentWeek((prevWeek) =>
+      prevWeek.map(({ day, date }) => ({
+        day,
+        date: date + direction * 7, // Suma o resta 7 días
+      }))
+    );
+    setSelectedDate(null); // Desmarcar el día al cambiar de semana
+  };
+
+  // Función para marcar/desmarcar un medicamento como completado
   const toggleCompletion = (id) => {
     setMedList((prevMeds) =>
       prevMeds.map((med) =>
@@ -22,18 +43,38 @@ const MedicationPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header con fecha */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="blue" />
+      {/* 📅 Selector de Fecha */}
+      <View style={styles.dateSelector}>
+        <TouchableOpacity onPress={() => changeWeek(-1)} style={styles.arrowButton}>
+          <Ionicons name="chevron-back" size={24} color="#3B49B4" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Enero</Text>
-        <TouchableOpacity>
-          <Ionicons name="chevron-forward" size={24} color="blue" />
+
+        <Text style={styles.monthText}>Enero</Text>
+
+        <TouchableOpacity onPress={() => changeWeek(1)} style={styles.arrowButton}>
+          <Ionicons name="chevron-forward" size={24} color="#3B49B4" />
         </TouchableOpacity>
       </View>
 
-      {/* Sección de progreso */}
+      {/* 🗓️ Semana actual */}
+      <View style={styles.weekContainer}>
+        {currentWeek.map(({ day, date }) => (
+          <TouchableOpacity
+            key={date}
+            style={[styles.dayContainer, selectedDate === date && styles.selectedDay]}
+            onPress={() => setSelectedDate(date)}
+          >
+            <Text style={[styles.dayText, selectedDate === date && styles.selectedDayText]}>
+              {day}
+            </Text>
+            <Text style={[styles.dateText, selectedDate === date && styles.selectedDateText]}>
+              {date}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* 🔵 Sección de Progreso */}
       <View style={styles.progressSection}>
         <View style={styles.progressCircle}>
           <Text style={styles.progressText}>15%</Text>
@@ -44,10 +85,8 @@ const MedicationPage = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Lista de medicamentos */}
-      <View style={styles.medicationHeader}>
-        <Text style={styles.medicationTitle}>Medicamentos</Text>
-      </View>
+      {/* 💊 Lista de Medicación */}
+      <Text style={styles.sectionTitle}>Medicación</Text>
       <ScrollView style={styles.scrollView}>
         {medList.map((med) => (
           <View key={med.id} style={styles.medicationItem}>
@@ -58,13 +97,17 @@ const MedicationPage = ({ navigation }) => {
               <Text style={styles.medicationDosage}>{med.dosage}</Text>
             </View>
             <TouchableOpacity onPress={() => toggleCompletion(med.id)}>
-              <Ionicons name={med.completed ? "checkmark-circle" : "ellipse-outline"} size={24} color={med.completed ? "blue" : "gray"} />
+              <Ionicons
+                name={med.completed ? "checkmark-circle" : "ellipse-outline"}
+                size={24}
+                color={med.completed ? "#3B49B4" : "gray"}
+              />
             </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
 
-      {/* Botón de añadir */}
+      {/* ➕ Botón de Añadir Medicación */}
       <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddMedication')}>
         <Text style={styles.addButtonText}>+ Añadir nuevo</Text>
       </TouchableOpacity>
@@ -72,57 +115,92 @@ const MedicationPage = ({ navigation }) => {
   );
 };
 
+export default MedicationPage;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FAFAFA',
+    paddingHorizontal: 20,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
+  dateSelector: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 15,
   },
-  headerTitle: {
+  monthText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    color: "#101432",
+  },
+  arrowButton: {
+    padding: 10,
+  },
+  weekContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  dayContainer: {
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+  },
+  selectedDay: {
+    backgroundColor: "#3B49B4",
+  },
+  dayText: {
+    fontSize: 14,
+    color: "#6B7280",
+  },
+  selectedDayText: {
+    color: "#FFFFFF",
+  },
+  dateText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#101432",
+  },
+  selectedDateText: {
+    color: "#FFFFFF",
   },
   progressSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
     padding: 20,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: "#F6F6F6",
     borderRadius: 10,
-    marginHorizontal: 20,
+    marginBottom: 20,
   },
   progressCircle: {
     width: 50,
     height: 50,
     borderRadius: 25,
     borderWidth: 5,
-    borderColor: 'blue',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "#3B49B4",
+    justifyContent: "center",
+    alignItems: "center",
   },
   progressText: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: 'blue',
+    fontWeight: "bold",
+    color: "#3B49B4",
   },
-  medicationHeader: {
-    padding: 15,
-  },
-  medicationTitle: {
+  sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    color: "#101432",
+    marginBottom: 10,
   },
   medicationItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 15,
     borderBottomWidth: 1,
-    borderColor: '#EEE',
+    borderColor: "#EEE",
   },
   dot: {
     width: 10,
@@ -133,24 +211,16 @@ const styles = StyleSheet.create({
   medicationInfo: {
     flex: 1,
   },
-  medicationTime: {
-    color: 'gray',
-  },
-  medicationName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   addButton: {
-    backgroundColor: 'blue',
+    backgroundColor: "#3B49B4",
     padding: 15,
-    alignItems: 'center',
-    margin: 20,
     borderRadius: 10,
+    alignItems: "center",
+    marginVertical: 15,
   },
   addButtonText: {
-    color: 'white',
+    color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "bold",
   },
 });
-
-export default MedicationPage;
