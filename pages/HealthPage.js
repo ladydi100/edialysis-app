@@ -22,12 +22,12 @@ const HealthPage = () => {
 
             {/* Opciones de salud */}
             <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('SelectValues')}>
-    <Icon name="heart" size={24} color="#3B49B4" style={styles.icon} />
-    <View>
-        <Text style={styles.optionTitle}>Valores</Text>
-        <Text style={styles.optionSubtitle}>Introduce tus resultados</Text>
-    </View>
-</TouchableOpacity>
+                <Icon name="heart" size={24} color="#3B49B4" style={styles.icon} />
+                <View>
+                    <Text style={styles.optionTitle}>Valores</Text>
+                    <Text style={styles.optionSubtitle}>Introduce tus resultados</Text>
+                </View>
+            </TouchableOpacity>
 
 
             <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('DialysisPage')}>
@@ -39,12 +39,12 @@ const HealthPage = () => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('MedicalAppointmentsSelectionPage')}>
-    <Ionicons name="calendar" size={24} color="#3B49B4" style={styles.icon} />
-    <View>
-        <Text style={styles.optionTitle}>Citas médicas</Text>
-        <Text style={styles.optionSubtitle}>Añade tus próximas citas</Text>
-    </View>
-</TouchableOpacity>
+                <Ionicons name="calendar" size={24} color="#3B49B4" style={styles.icon} />
+                <View>
+                    <Text style={styles.optionTitle}>Citas médicas</Text>
+                    <Text style={styles.optionSubtitle}>Añade tus próximas citas</Text>
+                </View>
+            </TouchableOpacity>
 
         </View>
     );

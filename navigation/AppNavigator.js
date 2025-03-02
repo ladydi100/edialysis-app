@@ -10,7 +10,7 @@ import AddMedicationPage from '../pages/AddMedicationPage';
 import DialysisPage from '../pages/DialysisPage';
 import DialysisSetupPage from '../pages/DialysisSetupPage';
 import DialysisStartDatePage from '../pages/DialysisStartDatePage';
-import DialysisDaysPage from '../pages/DialysisDaysPage'; 
+import DialysisDaysPage from '../pages/DialysisDaysPage';
 import DialysisWeightPage from '../pages/DialysisWeightPage';
 import DialysisRemindersPage from '../pages/DialysisRemindersPage';
 import MedicalAppointmentsSelectionPage from '../pages/MedicalAppointmentsSelectionPage';
@@ -32,15 +32,15 @@ export default function AppNavigator() {
     <Stack.Navigator>
       {userToken ? (
         <>
-          {/* Navegación principal con pestañas */}
-          <Stack.Screen 
-  name="BottomTabNavigator" 
-  component={BottomTabNavigator} 
-  options={{ headerShown: false, title: '' }} 
-/>
+          {/* Navegación principal con pestañas */}
+          <Stack.Screen
+            name="BottomTabNavigator"
+            component={BottomTabNavigator}
+            options={{ headerShown: false, title: '' }}
+          />
 
 
-          {/* Pantallas de diálisis */}
+          {/* Pantallas de diálisis */}
           <Stack.Screen name="DialysisPage" component={DialysisPage} />
           <Stack.Screen name="DialysisSetupPage" component={DialysisSetupPage} />
           <Stack.Screen name="DialysisStartDatePage" component={DialysisStartDatePage} />
@@ -57,7 +57,7 @@ export default function AppNavigator() {
         </>
       ) : (
         <>
-          {/* Si el usuario NO ha iniciado sesión, muestra las pantallas de autenticación */}
+          {/* Si el usuario NO ha iniciado sesión, muestra las pantallas de autenticación */}
           <Stack.Screen name="Welcome" component={WelcomePage} />
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Register" component={RegisterPage} />
@@ -65,7 +65,7 @@ export default function AppNavigator() {
         </>
       )}
 
-      {/* Pantalla de agregar medicación, accesible en cualquier momento */}
+      {/* Pantalla de agregar medicación, accesible en cualquier momento */}
       <Stack.Screen name="AddMedication" component={AddMedicationPage} />
 
       <Stack.Screen name="MedicalAppointmentsSelectionPage" component={MedicalAppointmentsSelectionPage} />
