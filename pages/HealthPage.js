@@ -3,6 +3,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+
 
 const HealthPage = () => {
     const navigation = useNavigation();
@@ -19,7 +21,7 @@ const HealthPage = () => {
             </View>
 
             {/* Opciones de salud */}
-            <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('HealthValuesPage')}>
+            <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('SelectValues')}>
                 <Icon name="heart" size={24} color="#3B49B4" style={styles.icon} />
                 <View>
                     <Text style={styles.optionTitle}>Valores</Text>
@@ -36,13 +38,14 @@ const HealthPage = () => {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.option} onPress={() => alert('Ir a Citas Médicas')}>
-                <Icon name="calendar" size={24} color="#3B49B4" style={styles.icon} />
+            <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('MedicalAppointmentsSelectionPage')}>
+                <Ionicons name="calendar" size={24} color="#3B49B4" style={styles.icon} />
                 <View>
                     <Text style={styles.optionTitle}>Citas médicas</Text>
-                    <Text style={styles.optionSubtitle}>Revisa tus citas médicas</Text>
+                    <Text style={styles.optionSubtitle}>Añade tus próximas citas</Text>
                 </View>
             </TouchableOpacity>
+
         </View>
     );
 };
