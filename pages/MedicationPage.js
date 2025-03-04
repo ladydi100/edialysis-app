@@ -5,7 +5,8 @@ import { AuthContext } from '../context/AuthContext';
 import { getMedicationsByDate, updateMedicationTakenStatus } from '../services/medicationService';
 import WeeklyCalendar from '../components/WeeklyCalendar';
 import { Ionicons } from '@expo/vector-icons';
-//import moment from 'moment-timezone';
+import Svg, { Circle, G } from 'react-native-svg';
+
 
 const MedicationPage = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(new Date()); 
@@ -91,6 +92,25 @@ const toggleMedication = async(time_id) => {
 };
 
 
+ const calculatePercentageTaken = () => {
+    const totalMedications = medications.length;
+    if (totalMedications === 0) return 0;
+
+    const takenMedications = medications.filter((med) => med.taken).length;
+    return (takenMedications / totalMedications) * 100;
+  };
+
+  const percentageTaken = calculatePercentageTaken();
+
+const radius = 40; // Radio del círculo
+  const strokeWidth = 10; // Grosor del borde
+  const circumference = 2 * Math.PI * radius; // Circunferencia del círculo
+  const progress = (percentageTaken / 100) * circumference; // Longitud del progreso
+
+  // Cantidad de medicamentos tomados
+  const takenMedications = medications.filter((med) => med.taken).length;
+  const totalMedications = medications.length;
+
  return (
     <View style={styles.container}>
       <WeeklyCalendar onDateSelect={handleDateSelect} selectedDate={selectedDate} />
@@ -98,6 +118,47 @@ const toggleMedication = async(time_id) => {
     {/* Fecha formateada: "Lunes 25 enero" */}
       <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
 
+
+
+         {/* Contenedor para el círculo de progreso y la cantidad de medicamentos */}
+      <View style={styles.progressContainer}>
+        {/* Círculo de progreso */}
+        <View style={styles.circleContainer}>
+          <Svg width="100" height="100">
+            <G rotation="-90" origin="50, 50">
+              {/* Círculo de fondo (azul claro) */}
+              <Circle
+                cx="50"
+                cy="50"
+                r={radius}
+                stroke="#E3E7FF" // Azul claro
+                strokeWidth={strokeWidth}
+                fill="transparent"
+              />
+              {/* Círculo de progreso (azul oscuro) */}
+              <Circle
+                cx="50"
+                cy="50"
+                r={radius}
+                stroke="#3B49B4" // Azul oscuro
+                strokeWidth={strokeWidth}
+                fill="transparent"
+                strokeDasharray={circumference}
+                strokeDashoffset={circumference - progress} // Controla el progreso
+                strokeLinecap="round" // Bordes redondeados
+              />
+            </G>
+          </Svg>
+          <Text style={styles.percentageText}>{percentageTaken.toFixed(0)}%</Text>
+        </View>
+
+        {/* Cantidad de medicamentos tomados */}
+        <View style={styles.medicationCountContainer}>
+          <Text style={styles.medicationCountText}>
+            {takenMedications} de {totalMedications} medicamentos
+          </Text>
+        </View>
+      </View>
 
    {/* Encabezado: "Medicación" y "+ Añadir Nuevo" */}
       <View style={styles.header}>
@@ -172,6 +233,35 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginBottom: 20,
   },
+ progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  circleContainer: {
+    position: 'relative',
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  percentageText: {
+    position: 'absolute',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#3B49B4',
+  },
+  medicationCountContainer: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  medicationCountText: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
+
+
+
   medicationList: {
     marginTop: 20,
   },
