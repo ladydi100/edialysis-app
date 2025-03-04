@@ -14,6 +14,7 @@ const AnalyticsPage = () => {
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
       type: '*/*', // Acepta cualquier tipo de archivo
+      
     });
     
     if (result.canceled === false) {

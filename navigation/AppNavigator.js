@@ -14,6 +14,8 @@ import DialysisDaysPage from '../pages/DialysisDaysPage';
 import DialysisWeightPage from '../pages/DialysisWeightPage';
 import DialysisRemindersPage from '../pages/DialysisRemindersPage';
 import MedicalAppointmentsSelectionPage from '../pages/MedicalAppointmentsSelectionPage';
+import MedicationDetail from '../pages/MedicationDetail';
+
 
 
 // Importamos las nuevas pantallas de valores de salud
@@ -67,7 +69,7 @@ export default function AppNavigator() {
 
       {/* Pantalla de agregar medicación, accesible en cualquier momento */}
       <Stack.Screen name="AddMedication" component={AddMedicationPage} />
-
+       <Stack.Screen name="MedicationDetail" component={MedicationDetail} />
       <Stack.Screen name="MedicalAppointmentsSelectionPage" component={MedicalAppointmentsSelectionPage} />
     </Stack.Navigator>
   );

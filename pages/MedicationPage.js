@@ -1,121 +1,148 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { AuthContext } from '../context/AuthContext';
+import { getMedicationsByDate, updateMedicationTakenStatus } from '../services/medicationService';
+import WeeklyCalendar from '../components/WeeklyCalendar';
 import { Ionicons } from '@expo/vector-icons';
-
-const medications = [
-  { id: '1', time: '10:00', name: 'Paracetamol', dosage: 'Tomar media pastilla (100g)', completed: true, color: 'green' },
-  { id: '2', time: '10:45', name: 'Enalapril', dosage: 'Tomar pastilla entera', completed: true, color: 'purple' },
-  { id: '3', time: '11:30', name: 'Diálisis con máquina en casa', dosage: '35 minutos de tratamiento', completed: false, color: 'orange' }
-];
+//import moment from 'moment-timezone';
 
 const MedicationPage = ({ navigation }) => {
-  // Estado para la fecha seleccionada
-  const [selectedDate, setSelectedDate] = useState(25);
-  const [currentWeek, setCurrentWeek] = useState([
-    { day: "Sab", date: 23 },
-    { day: "Dom", date: 24 },
-    { day: "Lun", date: 25 },
-    { day: "Mar", date: 26 },
-    { day: "Mie", date: 27 }
-  ]);
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [medications, setMedications] = useState([]);
+  const [hasUserSelectedDate, setHasUserSelectedDate] = useState(false); 
+  const { userToken } = useContext(AuthContext);
+  const isFocused = useIsFocused(); 
 
-  const [medList, setMedList] = useState(medications);
+  useEffect(() => {
+    if (isFocused && !hasUserSelectedDate) {
+      setSelectedDate(new Date()); 
+    }
+  }, [isFocused, hasUserSelectedDate]);
 
-  // Función para cambiar de semana
-  const changeWeek = (direction) => {
-    setCurrentWeek((prevWeek) =>
-      prevWeek.map(({ day, date }) => ({
-        day,
-        date: date + direction * 7, // Suma o resta 7 días
-      }))
-    );
-    setSelectedDate(null); // Desmarcar el día al cambiar de semana
+  useEffect(() => {
+    fetchMedications(selectedDate);
+  }, [selectedDate]);
+
+  const fetchMedications = async (date) => {
+  try {
+    // Formatea la fecha manualmente en el formato YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+   // console.log('Fecha enviada a la API:', formattedDate); // Verifica la fecha en la consola
+
+    const meds = await getMedicationsByDate(formattedDate, userToken);
+
+   const medicationsWithTaken = meds.map((med) => ({
+        ...med,
+        taken: med.taken || false,
+      }));
+
+ setMedications(medicationsWithTaken);
+
+    //setMedications(meds);
+  } catch (error) {
+    console.error('Error fetching medications:', error);
+  }
+};
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setHasUserSelectedDate(true); 
   };
 
-  // Función para marcar/desmarcar un medicamento como completado
-  const toggleCompletion = (id) => {
-    setMedList((prevMeds) =>
-      prevMeds.map((med) =>
-        med.id === id ? { ...med, completed: !med.completed } : med
-      )
-    );
+  // Función para formatear la fecha como "Lunes 25 enero"
+  const formatDate = (date) => {
+    const dayOfWeek = date.toLocaleString('es-ES', { weekday: 'long' });
+    const day = date.getDate();
+    const month = date.toLocaleString('es-ES', { month: 'long' });
+    return `${dayOfWeek} ${day} ${month}`;
   };
 
-  return (
+
+
+const toggleMedication = async(time_id) => {
+  //console.log('Toggle medication time_id:', time_id); // Verifica el time_id
+  try {
+    const medication = medications.find((med) => med.time_id === time_id);
+    if (!medication) {
+      console.error('Medication not found');
+      return;
+    }
+ 
+     // Invierte el estado `taken`
+    const newTakenStatus = !medication.taken;
+
+    // Llama al servicio para actualizar el estado en la base de datos
+    await updateMedicationTakenStatus(time_id, newTakenStatus, userToken);
+  
+  setMedications((prevMeds) =>
+    prevMeds.map((med) => 
+    //  console.log('Medication:', med); // Verifica la estructura de cada medicamento
+      med.time_id === time_id ? { ...med, taken: newTakenStatus } : med
+    )
+  );
+  } catch (error) {
+    console.error('Error toggling medication status:', error);
+  }
+};
+
+
+ return (
     <View style={styles.container}>
-      {/* 📅 Selector de Fecha */}
-      <View style={styles.dateSelector}>
-        <TouchableOpacity onPress={() => changeWeek(-1)} style={styles.arrowButton}>
-          <Ionicons name="chevron-back" size={24} color="#3B49B4" />
-        </TouchableOpacity>
+      <WeeklyCalendar onDateSelect={handleDateSelect} selectedDate={selectedDate} />
 
-        <Text style={styles.monthText}>Enero</Text>
+    {/* Fecha formateada: "Lunes 25 enero" */}
+      <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
 
-        <TouchableOpacity onPress={() => changeWeek(1)} style={styles.arrowButton}>
-          <Ionicons name="chevron-forward" size={24} color="#3B49B4" />
+
+   {/* Encabezado: "Medicación" y "+ Añadir Nuevo" */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Medicación</Text>
+       
+      </View>
+
+      <View style={styles.header2}>
+        <TouchableOpacity onPress={() => navigation.navigate('AddMedication')}>
+          <Text style={styles.addButton}>+ Añadir nuevo</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 🗓️ Semana actual */}
-      <View style={styles.weekContainer}>
-        {currentWeek.map(({ day, date }) => (
+
+       <ScrollView style={styles.medicationList}>
+        {medications.map((med) => (
           <TouchableOpacity
-            key={date}
-            style={[styles.dayContainer, selectedDate === date && styles.selectedDay]}
-            onPress={() => setSelectedDate(date)}
+            key={med.time_id}
+            style={styles.medicationItem}
+            onPress={() => navigation.navigate('MedicationDetail', { medication: med })}
           >
-            <Text style={[styles.dayText, selectedDate === date && styles.selectedDayText]}>
-              {day}
-            </Text>
-            <Text style={[styles.dateText, selectedDate === date && styles.selectedDateText]}>
-              {date}
-            </Text>
+            <View style={styles.medicationHeader}>
+              <View style={styles.timeContainer}>
+                <View style={[styles.dot, { backgroundColor: med.color }]} />
+                <Text style={styles.medicationTime}>{med.time}</Text>
+              </View>
+              <TouchableOpacity onPress={() => toggleMedication(med.time_id)}>
+                <Ionicons
+                name={med.taken ? 'checkbox' : 'checkbox-outline'}
+                size={24}
+                color={med.taken ? '#3B49B4' : '#6B7280'}
+               />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.medicationName}>{med.name}</Text>
+            <Text style={styles.medicationDosage}>{med.dosage}</Text>
+            <Text style={styles.medicationNotes}>{med.notes}</Text>
           </TouchableOpacity>
         ))}
-      </View>
-
-      {/* 🔵 Sección de Progreso */}
-      <View style={styles.progressSection}>
-        <View style={styles.progressCircle}>
-          <Text style={styles.progressText}>15%</Text>
-        </View>
-        <View style={styles.progressDetails}>
-          <Text style={styles.pillCount}>5 pastillas</Text>
-          <Text style={styles.treatmentCount}>1 tratamiento</Text>
-        </View>
-      </View>
-
-      {/* 💊 Lista de Medicación */}
-      <Text style={styles.sectionTitle}>Medicación</Text>
-      <ScrollView style={styles.scrollView}>
-        {medList.map((med) => (
-          <View key={med.id} style={styles.medicationItem}>
-            <View style={[styles.dot, { backgroundColor: med.color }]} />
-            <View style={styles.medicationInfo}>
-              <Text style={styles.medicationTime}>{med.time}</Text>
-              <Text style={styles.medicationName}>{med.name}</Text>
-              <Text style={styles.medicationDosage}>{med.dosage}</Text>
-            </View>
-            <TouchableOpacity onPress={() => toggleCompletion(med.id)}>
-              <Ionicons
-                name={med.completed ? "checkmark-circle" : "ellipse-outline"}
-                size={24}
-                color={med.completed ? "#3B49B4" : "gray"}
-              />
-            </TouchableOpacity>
-          </View>
-        ))}
       </ScrollView>
-
-      {/* ➕ Botón de Añadir Medicación */}
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddMedication')}>
-        <Text style={styles.addButtonText}>+ Añadir nuevo</Text>
-      </TouchableOpacity>
+    
     </View>
   );
 };
 
-export default MedicationPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -123,84 +150,52 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
     paddingHorizontal: 20,
   },
-  dateSelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 15,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 1,
   },
-  monthText: {
+  headerTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#101432",
+    fontWeight: 'bold',
+    color: '#101432',
   },
-  arrowButton: {
-    padding: 10,
-  },
-  weekContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  dayContainer: {
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-  },
-  selectedDay: {
-    backgroundColor: "#3B49B4",
-  },
-  dayText: {
-    fontSize: 14,
-    color: "#6B7280",
-  },
-  selectedDayText: {
-    color: "#FFFFFF",
+  addButton: {
+    fontSize: 16,
+    color: '#3B49B4',
+    textAlign: 'right'
   },
   dateText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#101432",
-  },
-  selectedDateText: {
-    color: "#FFFFFF",
-  },
-  progressSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    padding: 20,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 10,
+    fontSize: 16,
+    color: '#6B7280',
     marginBottom: 20,
   },
-  progressCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 5,
-    borderColor: "#3B49B4",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  progressText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#3B49B4",
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#101432",
-    marginBottom: 10,
+  medicationList: {
+    marginTop: 20,
   },
   medicationItem: {
-    flexDirection: "row",
-    alignItems: "center",
+        backgroundColor: '#FFFFFF',
+    borderRadius: 10,
     padding: 15,
-    borderBottomWidth: 1,
-    borderColor: "#EEE",
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+ medicationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+    timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignItems: 'center',
   },
   dot: {
     width: 10,
@@ -211,16 +206,28 @@ const styles = StyleSheet.create({
   medicationInfo: {
     flex: 1,
   },
-  addButton: {
-    backgroundColor: "#3B49B4",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginVertical: 15,
+  medicationTime: {
+    fontSize: 14,
+    color: '#6B7280',
   },
-  addButtonText: {
-    color: "#FFFFFF",
+  medicationName: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
+    color: '#101432',
+  },
+  medicationDosage: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  medicationNotes: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 5,
+  },
+  checkbox: {
+    fontSize: 18,
+    color: '#3B49B4',
   },
 });
+
+export default MedicationPage;
