@@ -33,7 +33,7 @@ const DialysisDaysPage = () => {
       <Text style={styles.description}>
         Selecciona los días durante los cuales sueles realizar el tratamiento de diálisis.
       </Text>
-      
+
       {daysOfWeek.map((day) => (
         <TouchableOpacity
           key={day}
@@ -43,7 +43,7 @@ const DialysisDaysPage = () => {
           <Text style={[styles.dayText, selectedDays.includes(day) && styles.selectedDayText]}>{day}</Text>
         </TouchableOpacity>
       ))}
-      
+
       <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
         <Text style={styles.buttonText}>Siguiente</Text>
       </TouchableOpacity>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     color: '#FAFAFA',
   },
   nextButton: {
-    backgroundColor: '#00A86B',
+    backgroundColor: '#3B49B4',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',

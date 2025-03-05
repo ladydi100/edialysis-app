@@ -18,13 +18,13 @@ const colors = [
 
 
 const daysOfWeek = [
-  { label: 'Lunes', value: 'Monday' },
-  { label: 'Martes', value: 'Tuesday' },
-  { label: 'Miércoles', value: 'Wednesday' },
-  { label: 'Jueves', value: 'Thursday' },
-  { label: 'Viernes', value: 'Friday' },
-  { label: 'Sábado', value: 'Saturday' },
-  { label: 'Domingo', value: 'Sunday' },
+  { label: 'Lunes', value: 'Lunes' },
+  { label: 'Martes', value: 'Martes' },
+  { label: 'Miércoles', value: 'Miércoles' },
+  { label: 'Jueves', value: 'Jueves' },
+  { label: 'Viernes', value: 'Viernes' },
+  { label: 'Sábado', value: 'Sábado' },
+  { label: 'Domingo', value: 'Domingo' },
 ];
 
 
@@ -38,7 +38,7 @@ const AddMedicationPage = ({ navigation }) => {
   const [times, setTimes] = useState([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedTimeIndex, setSelectedTimeIndex] = useState(null);
-  const [selectedDays, setSelectedDays] = useState([]); 
+  const [selectedDays, setSelectedDays] = useState([]);
   const [showDaysModal, setShowDaysModal] = useState(false);
 
 
@@ -53,7 +53,7 @@ const AddMedicationPage = ({ navigation }) => {
       days: selectedDays,
     };
 
-    
+
 
 
     try {
@@ -89,29 +89,34 @@ const AddMedicationPage = ({ navigation }) => {
   };
 
 
-   const toggleDay = (day) => {
+  const toggleDay = (day) => {
     if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter(d => d !== day)); 
+      setSelectedDays(selectedDays.filter(d => d !== day));
     } else {
-      setSelectedDays([...selectedDays, day]); 
+      setSelectedDays([...selectedDays, day]);
     }
   };
 
   return (
     <ScrollView style={styles.container}>
       {/* Nombre del medicamento */}
-      <TextInput
-        placeholder="Nombre del medicamento"
-        value={medicationName}
-        onChangeText={setMedicationName}
-        style={styles.input}
-      />
+      <View style={styles.inputContainer}>
+
+        <TextInput
+          placeholder="Nombre del medicamento"
+          value={medicationName}
+          onChangeText={setMedicationName}
+          style={styles.input}
+          placeholderTextColor="#6B7280" // Gris más claro para el placeholder
+        />
+      </View>
 
 
-  {/* Frecuencia de uso: Selección de días de la semana */}
+
+      {/* Frecuencia de uso: Selección de días de la semana */}
       <View style={styles.section}>
         <TouchableOpacity onPress={() => setShowDaysModal(true)} style={styles.calendarIconContainer}>
-          <Text style={styles.sectionTitle}>Frecuencia de uso</Text>
+          <Text style={{ fontSize: 16, color: '#6B7280', fontWeight: '500' }}>Frecuencia de uso</Text>
           <Icon name="calendar" size={24} color="#000" />
         </TouchableOpacity>
         <Text style={styles.selectedDaysText}>
@@ -119,7 +124,7 @@ const AddMedicationPage = ({ navigation }) => {
         </Text>
       </View>
 
-       <Modal
+      <Modal
         visible={showDaysModal}
         transparent={true}
         animationType="slide"
@@ -131,16 +136,20 @@ const AddMedicationPage = ({ navigation }) => {
             {daysOfWeek.map((day, index) => (
               <TouchableOpacity
                 key={index}
-                style={[
-                  styles.dayButton,
-                  selectedDays.includes(day.value) && styles.dayButtonSelected
-                ]}
+                style={[styles.dayButton, selectedDays.includes(day.value) && styles.dayButtonSelected]}
                 onPress={() => toggleDay(day.value)}
               >
-                <Text style={styles.dayButtonText}>{day.label}</Text>
+                <Text style={StyleSheet.flatten([
+                  styles.dayButtonText,
+                  selectedDays.includes(day.value) && styles.dayButtonTextSelected
+                ])}>
+                  {day.label}
+                </Text>
               </TouchableOpacity>
             ))}
-            <Button title="Cerrar" onPress={() => setShowDaysModal(false)} />
+            <TouchableOpacity style={styles.closeButton} onPress={() => setShowDaysModal(false)}>
+              <Button title="Cerrar" onPress={() => setShowDaysModal(false)} />
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -150,16 +159,21 @@ const AddMedicationPage = ({ navigation }) => {
 
 
 
-      {/* Dosis */}
-      <TextInput
-        placeholder="Dosis"
-        value={dosage}
-        onChangeText={setDosage}
-        style={styles.input}
-      />
-      
 
- <TouchableOpacity onPress={() => setShowTimePicker(true)}>
+      {/* Dosis */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Dosis"
+          value={dosage}
+          onChangeText={setDosage}
+          style={styles.input}
+          placeholderTextColor="#6B7280" // Gris más claro para el placeholder
+        />
+      </View>
+
+
+
+      <TouchableOpacity onPress={() => setShowTimePicker(true)}>
         <Text style={styles.input}>Añadir hora de toma</Text>
       </TouchableOpacity>
       {showTimePicker && (
@@ -184,17 +198,18 @@ const AddMedicationPage = ({ navigation }) => {
           <Button title="Eliminar" onPress={() => handleDeleteTime(index)} />
         </View>
       ))}
-     
+
 
       {/* Color */}
       <View style={styles.colorContainer}>
-        <Text style={styles.colorLabel}>Color</Text>
+        <Text style={styles.colorLabel} >Color</Text>
+
         <RNPickerSelect
           onValueChange={(value) => setSelectedColor(value)}
           items={colors}
           placeholder={{ label: 'Selecciona un color', value: null }}
           style={pickerSelectStyles}
-          
+
         />
         {selectedColor && (
           <View style={[styles.colorCircle, { backgroundColor: selectedColor }]} />
@@ -233,23 +248,32 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#F8F9FC', // Fondo similar al de la imagen
   },
+
   input: {
-    height: 48,
-    borderColor: '#E0E0E0',
+    height: 50,
+    borderColor: '#D1D5DB',
     borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 12,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    backgroundColor: '#F8FAFC',
+    marginBottom: 16,
     fontSize: 16,
-    color: '#333',
+    color: '#374151', // ⚠️ Asegúrate de que este color sea igual al de "Añadir hora de toma"
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
+
+
   section: {
     marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#374151', // 🔥 Mismo gris oscuro que "Añadir hora de toma"
     marginBottom: 10,
   },
   dayButton: {
@@ -271,13 +295,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
- calendarContainer: {
-    backgroundColor: 'white',
-    padding: 10, // Reducir el padding
-    borderRadius: 10,
-    width: '95%', // Ajustar el ancho del calendario
-    maxWidth: 400, // Ancho máximo para pantallas grandes
+  calendarIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
+
   timeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -334,7 +368,7 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     marginHorizontal: 10, // Espacio entre flechas y título
   },
-monthTitle: {
+  monthTitle: {
     fontSize: 16, // Tamaño del texto del mes
     fontWeight: 'bold',
     color: '#000',
@@ -351,6 +385,66 @@ monthTitle: {
     paddingHorizontal: 10, // Espacio interno
     width: '100%', // Asegurar que ocupe todo el ancho
   },
+
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(90, 90, 90, 0.6)', // Gris más claro con opacidad reducida
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 15,
+    width: '85%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 16, // Menos llamativo
+    fontWeight: '500',
+    marginBottom: 15,
+    color: '#4A4A4A', // Gris oscuro
+  },
+  dayButton: {
+    width: '100%',
+    backgroundColor: '#E0E0E0', // Gris más oscuro cuando no está seleccionado
+    paddingVertical: 16, // Más separación
+    borderRadius: 10,
+    marginBottom: 12, // Más espacio entre los días
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayButtonSelected: {
+    backgroundColor: '#2D47C3', // Azul más oscuro cuando está seleccionado
+  },
+  dayButtonText: {
+    fontSize: 16,
+    color: '#000', // Letra en negro cuando no está seleccionado
+    fontWeight: '500',
+  },
+  dayButtonTextSelected: {
+    color: '#FFFFFF',  // Texto en blanco cuando está seleccionado
+  },
+  closeButtonContainer: {
+    width: '100%',
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  closeButton: {
+    width: '50%',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+
 
 
 });
@@ -377,6 +471,31 @@ const pickerSelectStyles = StyleSheet.create({
     color: '#333',
     backgroundColor: '#FFFFFF',
   },
+
+  frequencyText: {
+    fontSize: 16,
+    color: '#4a4950', // 🔥 Mismo gris oscuro para coherencia
+    fontWeight: '100',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    textAlign: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+
+
 });
 
 

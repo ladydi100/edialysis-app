@@ -46,9 +46,16 @@ const HomePage = ({ navigation }) => {
           <Text style={styles.healthValue}>110 mg/dl</Text>
         </View>
       </ScrollView>
-      <TouchableOpacity onPress={() => navigation.navigate('HealthPage')}>
-        <Text style={styles.addButton}>+ Añadir nuevo</Text>
+
+
+
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('MedicationPage')}>
+        <Ionicons name="add-outline" size={18} color="#3E3EEC" style={styles.addIcon} />
+        <Text style={styles.addButtonText}>Añadir nuevo</Text>
       </TouchableOpacity>
+
+
+
 
       <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Tu medicación</Text>
       <Text style={styles.subText}>Lunes 26 enero</Text>
@@ -70,9 +77,11 @@ const HomePage = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <TouchableOpacity onPress={() => navigation.navigate('AddMedication')}>
-        <Text style={styles.addButton}>+ Añadir nuevo</Text>
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('HealthPage')}>
+        <Ionicons name="add-outline" size={18} color="#3E3EEC" style={styles.addIcon} />
+        <Text style={styles.addButtonText}>Añadir nuevo</Text>
       </TouchableOpacity>
+
 
       <MedicalAppointments />
     </ScrollView>
@@ -104,11 +113,16 @@ const MedicalAppointments = () => {
           <Ionicons name="calendar-outline" size={20} color="#3E3E3E" />
           <Text style={styles.appointmentTitle}>Próximas citas</Text>
         </View>
-        <Text style={styles.department}>{appointments[currentIndex].department} • {appointments[currentIndex].hospital}</Text>
-        <View style={styles.dateContainer}>
-          <TouchableOpacity onPress={prevAppointment}>
+        <Text style={styles.department}>
+          <Text style={styles.boldText}>{appointments[currentIndex].department}</Text> • {appointments[currentIndex].hospital}
+        </Text>
+
+        {/* Flechas de navegación y contenido de la cita */}
+        <View style={styles.navigationContainer}>
+          <TouchableOpacity onPress={prevAppointment} style={styles.arrowButton}>
             <Ionicons name="chevron-back-outline" size={24} color="#3E3E3E" />
           </TouchableOpacity>
+
           <View style={styles.dateBox}>
             <Text style={styles.dateText}>{appointments[currentIndex].date}</Text>
             <View style={styles.timeContainer}>
@@ -116,14 +130,26 @@ const MedicalAppointments = () => {
               <Text style={styles.timeText}>{appointments[currentIndex].time}</Text>
             </View>
           </View>
-          <TouchableOpacity onPress={nextAppointment}>
+
+          <TouchableOpacity onPress={nextAppointment} style={styles.arrowButton}>
             <Ionicons name="chevron-forward-outline" size={24} color="#3E3E3E" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.changeButton}>
+            <Text style={styles.changeText}>Cambiar fecha</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.confirmButton}>
+            <Text style={styles.confirmText}>Confirmar</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 };
+
+
 
 // Estilos combinados e integrados
 const styles = StyleSheet.create({
@@ -139,14 +165,74 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 20, color: '#3E3E3E', fontWeight: '600', marginBottom: 12 },
 
   // Health Values
-  healthValuesContainer: { flexDirection: 'row', gap: 8, marginTop: 8 },
-  healthCard: { padding: 15, borderRadius: 8, width: 100, alignItems: 'center', justifyContent: 'center', marginRight: 8 },
-  healthTitle: { fontSize: 12, color: '#3E3E3E' },
-  healthValue: { fontSize: 20, fontWeight: 'bold', color: '#161B43' },
-  cardBlue: { backgroundColor: '#E3F2FD' },
-  cardTeal: { backgroundColor: '#E8F5E9' },
-  cardRed: { backgroundColor: '#FFEBEE' },
-  cardYellow: { backgroundColor: '#FFF9C4' },
+  // Contenedor de la sección
+  healthValuesContainer: {
+    flexDirection: 'row',
+    gap: 12, // Más separación entre tarjetas
+    marginTop: 12,
+    paddingHorizontal: 10, // Margen para evitar que las tarjetas estén pegadas a los bordes
+
+  },
+
+  // Tarjetas individuales
+  healthCard: {
+    padding: 20, // Más espacio interno para que los textos respiren
+    borderRadius: 14,
+    width: 130, // Más anchas para mejor legibilidad
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    marginRight: 14, // Espacio entre cada tarjeta
+  },
+
+
+  // Título de cada tarjeta
+  healthTitle: {
+    fontSize: 13, // Más grande
+    color: '#3E3E3E',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+
+  // Valor dentro de la tarjeta
+  healthValue: {
+    fontSize: 22, // Más grande para destacar el dato
+    fontWeight: 'bold',
+    color: '#161B43',
+    marginTop: 6,
+
+
+  },
+
+  // Colores de fondo corregidos
+  cardBlue: { backgroundColor: '#D9EFFF' }, // Azul más vibrante
+  cardTeal: { backgroundColor: '#D1F2E8' }, // Verde agua más claro
+  cardRed: { backgroundColor: '#FFD9D9' }, // Rojo más pastel
+  cardYellow: { backgroundColor: '#FFF4CC' }, // Amarillo más sutil
+
+  // AddButton
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F4F4FF', // Fondo suave que armoniza con la UI
+    paddingVertical: 8, // Tamaño más compacto
+    paddingHorizontal: 12,
+    borderRadius: 20, // Más redondeado para que se vea más limpio
+    alignSelf: 'center', // Centrarlo en la vista
+    marginTop: 8,
+  },
+
+  addIcon: {
+    marginRight: 6, // Separación del icono con el texto
+  },
+
+  addButtonText: {
+    fontSize: 14, // Más pequeño para que no resalte demasiado
+    fontWeight: '500',
+    color: '#3E3EEC',
+  },
+
 
   // Medication
   medicationContainer: { flexDirection: 'row', gap: 10, marginTop: 10 },
@@ -161,10 +247,90 @@ const styles = StyleSheet.create({
 
   // Appointments
   appointmentContainer: { marginTop: 32 },
-  appointmentCard: { backgroundColor: '#FFFFFF', padding: 20, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
+
+  appointmentCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4
+  },
+
   appointmentHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
+
   appointmentTitle: { fontSize: 18, fontWeight: 'bold', marginLeft: 8, color: '#3E3E3E' },
+
   department: { color: '#6D6D6D', marginBottom: 10 },
-  dateContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#E3F2FD', padding: 10, borderRadius: 8, marginBottom: 12 }
+
+  boldText: { fontWeight: '600', color: '#3E3E3E' },
+
+  // Contenedor para alinear las flechas y la fecha correctamente
+  navigationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', // Centra los elementos
+    marginBottom: 12
+  },
+
+  arrowButton: {
+    padding: 10
+  },
+
+  // Fondo azul ahora cubre toda la fecha y la hora correctamente
+  dateBox: {
+    backgroundColor: '#E3F2FD', // Azul claro
+    paddingVertical: 12, // Más altura para evitar cortes
+    paddingHorizontal: 16, // Más espacio en los lados
+    borderRadius: 12, // Bordes más redondeados como en la imagen
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', // Centra el contenido
+    minWidth: 180, // Evita que el cuadro sea demasiado pequeño
+  },
+
+  dateText: {
+    fontSize: 16,
+    color: '#3E3E3E',
+    fontWeight: '600',
+  },
+
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 5 // Espacio entre fecha y hora
+  },
+
+  timeText: {
+    fontSize: 16,
+    color: '#3E3E3E',
+    marginLeft: 5
+  },
+
+  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
+
+  changeButton: {
+    borderWidth: 1,
+    borderColor: '#3E3EEC',
+    padding: 12,
+    borderRadius: 8,
+    flex: 1,
+    marginRight: 8,
+    alignItems: 'center'
+  },
+
+  changeText: { fontSize: 16, color: '#3E3EEC', fontWeight: '500' },
+
+  confirmButton: {
+    backgroundColor: '#3E3EEC',
+    padding: 12,
+    borderRadius: 8,
+    flex: 1,
+    marginLeft: 8,
+    alignItems: 'center'
+  },
+
+  confirmText: { fontSize: 16, color: '#FFFFFF', fontWeight: '500' }
 });
 export default HomePage;
