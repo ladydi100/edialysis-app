@@ -1,18 +1,60 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import API_URL from '../config/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HeartRatePage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
   const [heartRate, setHeartRate] = useState('');
 
-  const handleSave = () => {
+   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchLatestHeartRate = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+
+      try {
+        const response = await axios.get(`${API_URL}/heart-rate/latest`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.heart_rate) {
+          setHeartRate(response.data.heart_rate.toString());
+        }
+      } catch (error) {
+        console.error('Error fetching latest heart rate:', error);
+         setError('Error al obtener los datos de frecuencia cardíaca');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLatestHeartRate();
+  }, []);
+
+  const handleSave = async () => {
     if (!heartRate) {
-      alert('Por favor, introduce un valor válido.');
+       Alert.alert('Por favor, introduce un valor válido.');
       return;
     }
+/*if (isNaN(heartRateValue)) {
+      Alert.alert('Error', 'La frecuencia cardíaca debe ser un número válido.');
+      return;
+    }*/
+      const token = await AsyncStorage.getItem('userToken');
+
+    try {
+      await axios.post(`${API_URL}/heart-rate`, { heartRate }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
     navigation.navigate('SelectedValues', {
       selectedParameters: route.params?.selectedParameters || [],
@@ -21,7 +63,29 @@ const HeartRatePage = () => {
         heartRate: `${heartRate} bpm`
       }
     });
+     } catch (error) {
+      console.error('Error saving heart rate:', error);
+       Alert.alert('Error', 'No se pudo guardar la frecuencia cardíaca. Inténtalo de nuevo.');
+    }
   };
+
+if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Cargando...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+
 
   return (
     <View style={styles.container}>

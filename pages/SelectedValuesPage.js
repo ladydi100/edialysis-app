@@ -1,25 +1,89 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, fetchLatestValues } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import API_URL from '../config/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SelectedValuesPage = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
-  // Recuperar los valores seleccionados y los valores actualizados
-  const { selectedParameters = [] } = route.params || {};
-  const [values, setValues] = useState(route.params?.updatedValues || {});
+  const [latestValues, setLatestValues] = useState({
+    bloodPressure: null,
+    heartRate: null,
+    weight: null,
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (route.params?.updatedValues) {
-      setValues(prevValues => ({
-        ...prevValues,
-        ...route.params.updatedValues // Mantener valores previos y actualizar nuevos
-      }));
-    }
-  }, [route.params?.updatedValues]);
+    const fetchLatestValues = async () => {
+      const token = await AsyncStorage.getItem('userToken');
 
-  // Mapear IDs de parámetros con nombres de pantalla y etiquetas
+      try {
+        const bloodPressureResponse = await axios.get(`${API_URL}/blood-pressure/latest`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const heartRateResponse = await axios.get(`${API_URL}/heart-rate/latest`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const weightResponse = await axios.get(`${API_URL}/weight/latest`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setLatestValues({
+          bloodPressure: bloodPressureResponse.data || null,
+          heartRate: heartRateResponse.data || null,
+          weight: weightResponse.data || null,
+        });
+      } catch (error) {
+        console.error('Error fetching latest values:', error);
+        setError('Error al obtener los datos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLatestValues();
+  }, []);
+
+  const getFormattedValue = (paramId) => {
+    switch (paramId) {
+      case 'bloodPressure':
+        return latestValues.bloodPressure && latestValues.bloodPressure.systolic && latestValues.bloodPressure.diastolic
+          ? `${latestValues.bloodPressure.systolic}/${latestValues.bloodPressure.diastolic} mmHg`
+          : 'No ingresado';
+      case 'heartRate':
+        return latestValues.heartRate && latestValues.heartRate.heart_rate
+          ? `${latestValues.heartRate.heart_rate} bpm`
+          : 'No ingresado';
+      case 'weight':
+        return latestValues.weight && latestValues.weight.weight
+          ? `${latestValues.weight.weight} kg`
+          : 'No ingresado';
+      default:
+        return 'No ingresado';
+    }
+  };
+
+  const goToParameterPage = (parameterId) => {
+    navigation.navigate(parameterScreenMap[parameterId], {
+      selectedParameters: route.params?.selectedParameters || [],
+      updatedValues: latestValues,
+      onSave: fetchLatestValues,
+    });
+  };
+
   const parameterScreenMap = {
     bloodPressure: 'BloodPressure',
     heartRate: 'HeartRate',
@@ -32,25 +96,34 @@ const SelectedValuesPage = () => {
     weight: 'Peso',
   };
 
-  const goToParameterPage = (parameterId) => {
-    navigation.navigate(parameterScreenMap[parameterId], {
-      selectedParameters,
-      updatedValues: values,
-    });
-  };
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#3B49B4" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Configura tus valores</Text>
 
-      {selectedParameters.map((paramId) => (
+      {route.params?.selectedParameters?.map((paramId) => (
         <TouchableOpacity
           key={paramId}
           style={styles.paramButton}
           onPress={() => goToParameterPage(paramId)}
         >
           <Text style={styles.paramText}>
-            {parameterLabelMap[paramId]}: {values[paramId] || 'No ingresado'}
+            {parameterLabelMap[paramId]}: {getFormattedValue(paramId)}
           </Text>
         </TouchableOpacity>
       ))}
@@ -63,8 +136,6 @@ const SelectedValuesPage = () => {
     </View>
   );
 };
-
-export default SelectedValuesPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -99,4 +170,11 @@ const styles = StyleSheet.create({
   graphPlaceholder: {
     color: '#999',
   },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+  },
 });
+
+export default SelectedValuesPage;
