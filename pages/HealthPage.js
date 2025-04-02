@@ -1,3 +1,4 @@
+
 // HealthPage.js - Página de Salud actualizada
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
@@ -103,4 +104,3 @@ const styles = StyleSheet.create({
 });
 
 export default HealthPage;
-

@@ -1,20 +1,36 @@
 // DialysisWeightPage.js - Página para ingresar el peso seco
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const DialysisWeightPage = () => {
   const navigation = useNavigation();
+   const route = useRoute();
   const [weight, setWeight] = useState('');
 
-  const handleSave = () => {
-    if (weight) {
-      // Guardar el peso ingresado y continuar a la selección de días de diálisis
-      navigation.navigate('DialysisDaysPage', { weight });
-    } else {
+  const handleNext = () => {
+        Keyboard.dismiss();
+        navigation.navigate('DialysisDaysPage', {
+            treatmentType: route.params.treatmentType,
+            startDate: route.params.startDate,
+            weight: parseFloat(weight)
+        });
+    };
+    
+ const handleSave = () => {
+    Keyboard.dismiss();
+    if (!weight) {
       alert('Por favor, ingresa tu peso seco.');
+      return;
     }
+
+    navigation.navigate('DialysisDaysPage', {
+      treatmentType: route.params?.treatmentType,
+      startDate: route.params?.startDate, // Pasar la fecha recibida
+      weight: parseFloat(weight)
+    });
   };
+
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>

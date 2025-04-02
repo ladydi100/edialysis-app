@@ -6,7 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 const DialysisDaysPage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { weight } = route.params || {};
+ const { weight, startDate, treatmentType } = route.params || {};
   const [selectedDays, setSelectedDays] = useState([]);
 
   const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
@@ -19,9 +19,14 @@ const DialysisDaysPage = () => {
     );
   };
 
-  const handleNext = () => {
+ const handleNext = () => {
     if (selectedDays.length > 0) {
-      navigation.navigate('DialysisRemindersPage', { weight, selectedDays });
+      navigation.navigate('DialysisRemindersPage', { 
+        weight, 
+        selectedDays,
+        treatmentType,
+        startDate // Pasar la fecha recibida
+      });
     } else {
       alert('Por favor, selecciona al menos un día.');
     }
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
   },
   dayButton: {
     backgroundColor: '#E3E3E3',
-    padding: 15,
+    padding: 12,
     borderRadius: 10,
     marginBottom: 10,
     alignItems: 'center',
@@ -88,10 +93,10 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: '#3B49B4',
-    padding: 15,
+    padding: 13,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 15,
   },
   buttonText: {
     color: '#FAFAFA',

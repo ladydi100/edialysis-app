@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation , useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const DialysisStartDatePage = () => {
     const navigation = useNavigation();
+    const route = useRoute();
     const [date, setDate] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
 
+     const handleNext = () => {
+    navigation.navigate('DialysisWeightPage', { 
+      startDate: date.toISOString(), 
+      treatmentType: route.params?.treatmentType 
+    });
+  };
+
+
+
+  
     return (
         <View style={styles.container}>
            
@@ -36,12 +47,15 @@ const DialysisStartDatePage = () => {
             )}
 
             {/* Botón para avanzar a la siguiente pantalla (DialysisWeightPage) */}
-            <TouchableOpacity 
-                style={styles.button} 
-                onPress={() => navigation.navigate('DialysisWeightPage', { startDate: date })}
-            >
-                <Text style={styles.buttonText}>Siguiente</Text>
-            </TouchableOpacity>
+           <TouchableOpacity 
+    style={styles.button} 
+    onPress={() => navigation.navigate('DialysisWeightPage', { 
+        startDate: date,
+        treatmentType: route.params?.treatmentType 
+    })}
+>
+    <Text style={styles.buttonText}>Siguiente</Text>
+</TouchableOpacity>
         </View>
     );
 };

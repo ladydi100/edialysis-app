@@ -1,55 +1,95 @@
-// DialysisPage.js - Página de Control de Diálisis sin almacenamiento persistente
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, 
+  ActivityIndicator,  Alert  } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { AuthContext } from '../context/AuthContext';
+import { getDialysisTreatment } from '../services/dialysisService';
 
 const DialysisPage = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { reminders: routeReminders, weight: routeWeight } = route.params || { reminders: {}, weight: null };
+    const { userToken } = useContext(AuthContext);
+    const [treatmentData, setTreatmentData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [reminders, setReminders] = useState(routeReminders);
-    const [weight, setWeight] = useState(routeWeight);
-
+    // Cargar los datos del tratamiento al montar el componente
     useEffect(() => {
-        navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', { screen: 'Salud' })} style={styles.backButton}>
-                    <Icon name="arrow-back" size={24} color="#101432" />
-                </TouchableOpacity>
-            ),
+        const loadTreatmentData = async () => {
+            try {
+                const data = await getDialysisTreatment(userToken);
+                setTreatmentData(data);
+            } catch (error) {
+                console.error('Error loading treatment data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadTreatmentData();
+    }, [userToken]);
+
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <Text>Cargando datos...</Text>
+            </View>
+        );
+    }
+
+
+const handleNext = () => {
+    if (selectedDays.length > 0) {
+        navigation.navigate('DialysisRemindersPage', { 
+            weight: route.params?.weight,
+            selectedDays,
+            treatmentType: route.params?.treatmentType,
+            startDate: route.params?.startDate
         });
-    }, [navigation]);
+    } else {
+        alert('Por favor, selecciona al menos un día.');
+    }
+};
 
     return (
         <ScrollView style={styles.container}>
             <Text style={styles.title}>Control de Diálisis</Text>
             
             <Text style={styles.description}>
-                Lleva un registro de tus sesiones de diálisis y consulta datos importantes.
+                Registra tus tratamientos
             </Text>
 
             <TouchableOpacity 
                 style={styles.addButton}
                 onPress={() => navigation.navigate('DialysisSetupPage')}
             >
-                <Text style={styles.buttonText}>Añadir sesión</Text>
+                <Text style={styles.buttonText}>
+                    {treatmentData ? 'Añadir tratamiento' : 'Añadir tratamiento'}
+                </Text>
             </TouchableOpacity>
 
-            {weight && (
+            {treatmentData?.dry_weight && (
                 <View style={styles.weightContainer}>
                     <Text style={styles.weightTitle}>Peso seco registrado</Text>
-                    <Text style={styles.weightText}>{weight} kg</Text>
+                    <Text style={styles.weightText}>{treatmentData.dry_weight} kg</Text>
+                </View>
+            )}
+
+            {treatmentData?.treatment_type && (
+                <View style={styles.typeContainer}>
+                    <Text style={styles.typeTitle}>Tipo de tratamiento</Text>
+                    <Text style={styles.typeText}>{treatmentData.treatment_type}</Text>
                 </View>
             )}
 
             <View style={styles.historyContainer}>
-                <Text style={styles.historyTitle}>Historial de sesiones</Text>
-                {Object.keys(reminders).length > 0 ? (
-                    Object.entries(reminders).map(([day, time], index) => (
+                <Text style={styles.historyTitle}>Historial de tratamientos</Text>
+                {treatmentData?.days && treatmentData.days.length > 0 ? (
+                    treatmentData.days.map((day, index) => (
                         <View key={index} style={styles.sessionItem}>
-                            <Text style={styles.sessionText}>{day}: {time ? new Date(time).toLocaleTimeString() : 'Sin hora definida'}</Text>
+                            <Text style={styles.sessionText}>
+                                {day.day_of_week}: {day.reminder_time || 'Sin hora definida'}
+                            </Text>
                         </View>
                     ))
                 ) : (
@@ -60,11 +100,18 @@ const DialysisPage = () => {
     );
 };
 
+// Estilos
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FAFAFA',
         padding: 20,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FAFAFA',
     },
     title: {
         fontSize: 24,
@@ -114,6 +161,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#101432',
+        marginBottom: 10,
     },
     sessionItem: {
         marginTop: 10,

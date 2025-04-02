@@ -14,6 +14,12 @@ const DialysisSetupPage = () => {
         'Diálisis peritoneal en casa',
     ];
 
+        const handleNext = () => {
+        navigation.navigate('DialysisStartDatePage', { 
+            treatmentType: selectedType 
+        });
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>¿Qué tipo de tratamiento de diálisis sigues?</Text>
@@ -29,13 +35,13 @@ const DialysisSetupPage = () => {
                 </TouchableOpacity>
             ))}
 
-            <TouchableOpacity 
-                style={[styles.button, !selectedType && styles.buttonDisabled]} 
-                onPress={() => selectedType && navigation.navigate('DialysisStartDatePage')}
-                disabled={!selectedType}
-            >
-                <Text style={styles.buttonText}>Siguiente</Text>
-            </TouchableOpacity>
+          <TouchableOpacity 
+    style={[styles.button, !selectedType && styles.buttonDisabled]} 
+    onPress={() => selectedType && navigation.navigate('DialysisStartDatePage', { treatmentType: selectedType })}
+    disabled={!selectedType}
+>
+    <Text style={styles.buttonText}>Siguiente</Text>
+</TouchableOpacity>
         </View>
     );
 };
