@@ -10,7 +10,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import AddMedicationPage from '../pages/AddMedicationPage';
 import MedicationDetail from '../pages/MedicationDetail';
 import MedicalAppointmentsSelectionPage from '../pages/MedicalAppointmentsSelectionPage';
-
+//import AppointmentDateTimeSelection from '../pages/AppointmentDateTimeSelection';
 // Importaciones de pantallas de salud
 import SelectValuesPage from '../pages/SelectValuesPage';
 import SelectedValuesPage from '../pages/SelectedValuesPage';
@@ -38,7 +38,8 @@ export default function AppNavigator() {
           <Stack.Screen name="AddMedication" component={AddMedicationPage} />
           <Stack.Screen name="MedicationDetail" component={MedicationDetail} />
           <Stack.Screen name="MedicalAppointmentsSelectionPage" component={MedicalAppointmentsSelectionPage} />
-
+           
+         
           {/* Pantallas de valores de salud */}
           <Stack.Screen name="SelectValues" component={SelectValuesPage} />
           <Stack.Screen name="SelectedValues" component={SelectedValuesPage} />

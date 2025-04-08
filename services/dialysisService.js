@@ -40,3 +40,19 @@ export const getDialysisTreatment = async (token) => {
     throw error.response?.data?.error || 'Error al obtener el tratamiento';
   }
 };
+
+
+export const updateDialysisTreatment = async (token, treatmentData) => {
+  try {
+    const response = await axios.put(`${API_URL}/dialysis`, treatmentData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating dialysis treatment:', error);
+    throw error.response?.data?.error || 'Error al actualizar el tratamiento';
+  }
+};

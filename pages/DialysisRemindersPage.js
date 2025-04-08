@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3E3E3',
     padding: 10,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 9,
   },
   reminderText: {
     fontSize: 16,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 9,
   },
   skipButton: {
     backgroundColor: '#898483',

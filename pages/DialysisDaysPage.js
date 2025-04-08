@@ -60,11 +60,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FAFAFA',
-    padding: 20,
+    padding: 18,
     justifyContent: 'center',
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#101432',
     marginBottom: 10,
