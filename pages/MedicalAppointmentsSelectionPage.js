@@ -23,7 +23,16 @@ const MedicalAppointmentsSelectionPage = () => {
   const [editTime, setEditTime] = useState('');
   const [editSpecialty, setEditSpecialty] = useState('');
 
-
+  const formatDateToSpanish = (date) => {
+    const options = {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    };
+    
+    return date.toLocaleDateString('es-ES', options);
+  };
 
   const specialties = ['Nefrología', 'Cardiología', 'Endocrinología', 'Nutrición Clínica', 'Psicología Médica'];
 
@@ -42,13 +51,17 @@ const MedicalAppointmentsSelectionPage = () => {
     }
   }, [userToken]);
 
-  const handleDateChange = (event, selectedDate) => {
+ const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
     if (selectedDate) {
+      // Ajuste para evitar problemas de zona horaria
+      const offset = selectedDate.getTimezoneOffset() * 60000; // offset en milisegundos
+      const localDate = new Date(selectedDate.getTime() - offset);
       setDate(selectedDate);
-      setDisplayDate(selectedDate.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+      setDisplayDate(localDate.toISOString().split('T')[0]);
     }
   };
+
 
   const handleTimeChange = (event, selectedTime) => {
     setShowTimePicker(false);
@@ -82,14 +95,6 @@ const MedicalAppointmentsSelectionPage = () => {
       setAppointments(updatedAppointments);
 
 
-  /*  const newAppointment = {
-      id: Math.random().toString(),
-      specialty: selectedSpecialty,
-      date: displayDate,
-      time: displayTime,
-    };*/
-
-    //setAppointments([...appointments, newAppointment]);
     setSelectedSpecialty(null);
     setDate(new Date());
     setDisplayDate('');
@@ -104,8 +109,16 @@ const MedicalAppointmentsSelectionPage = () => {
   };
 
   const formatDisplayDate = (dateString) => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('es-ES', options);
+    // Asegurarnos de que la fecha se interprete correctamente
+    const dateObj = new Date(dateString);
+    const options = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      timeZone: 'UTC' // Forzamos UTC para consistencia
+    };
+    return dateObj.toLocaleDateString('es-ES', options);
   };
 
 
@@ -211,6 +224,14 @@ const openEditModal = (appointment) => {
               onChange={handleTimeChange}
             />
           )}
+          
+ 
+
+         <Text style={styles.selectedInfo}>
+            Fecha:  {formatDateToSpanish(date)} {'\n'}
+            Hora: {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </Text>
+
 
           <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
             <Text style={styles.confirmButtonText}>Guardar cita</Text>
@@ -334,14 +355,21 @@ const openEditModal = (appointment) => {
                 style={[styles.modalButton, styles.deleteButton]}
                 onPress={handleDeleteAppointment}
               >
-                <Text style={styles.modalButtonText}>Eliminar</Text>
+                <Text style={[styles.modalButtonText, {color: '#101432'}]}>Eliminar</Text>
               </TouchableOpacity>
+
+       <TouchableOpacity 
+    style={[styles.modalButton, styles.cancelButton]}
+    onPress={() => setModalVisible(false)}
+  >
+ <Text style={[styles.modalButtonText, {color: '#101432'}]}>Cancelar</Text>
+  </TouchableOpacity>
 
               <TouchableOpacity 
                 style={[styles.modalButton, styles.saveButton]}
                 onPress={handleUpdateAppointment}
               >
-                <Text style={styles.modalButtonText}>Guardar Cambios</Text>
+                <Text style={styles.modalButtonText}>Guardar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -445,14 +473,35 @@ const styles = StyleSheet.create({
   modalButton: {
     padding: 12,
     borderRadius: 8,
-    width: '48%',
+    width: '30%',
     alignItems: 'center',
   },
   deleteButton: {
-    backgroundColor: '#FF3B30',
+     backgroundColor: '#F8F9FA',
+         borderWidth: 1,
+        borderColor: '#D64550',
+        padding: 15,
+        borderRadius: 5,
+        flex: 1,
+        marginRight: 10,
+        alignItems: 'center',
   },
+
+  
+  cancelButton: {
+    backgroundColor: '#E3E3E3',
+        padding: 15,
+        borderRadius: 5,
+        flex: 1,
+        marginRight: 10,
+        alignItems: 'center',
+},
   saveButton: {
-    backgroundColor: '#3B49B4',
+     backgroundColor: '#3B49B4',
+        padding: 15,
+        borderRadius: 5,
+        flex: 1,
+        alignItems: 'center',
   },
   modalButtonText: {
     color: 'white',
