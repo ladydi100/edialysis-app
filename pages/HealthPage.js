@@ -1,6 +1,6 @@
 
 // HealthPage.js - Página de Salud actualizada
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,24 @@ import { Ionicons } from '@expo/vector-icons';
 
 const HealthPage = () => {
     const navigation = useNavigation();
+
+ useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Salud', // Título de la pantalla
+      headerLeft: () => (
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('Home')} // Navega a Home al presionar
+          style={{ marginLeft: 15 }}
+        >
+          <Ionicons name="arrow-back" size={26} color="#3B49B4" />
+        </TouchableOpacity>
+      ),
+      headerStyle: {
+        shadowColor: 'transparent', // Elimina la sombra en iOS
+        elevation: 0, // Elimina la sombra en Android
+      },
+    });
+  }, [navigation]);
 
     return (
         <View style={styles.container}>
@@ -22,7 +40,10 @@ const HealthPage = () => {
             </View>
 
             {/* Opciones de salud */}
-            <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('SelectValues')}>
+            <TouchableOpacity  style={styles.option} 
+             onPress={() => navigation.navigate('Salud', { 
+              screen: 'SelectValues'})}
+            >
                 <Icon name="heart" size={24} color="#3B49B4" style={styles.icon} />
                 <View>
                     <Text style={styles.optionTitle}>Valores</Text>
@@ -39,7 +60,12 @@ const HealthPage = () => {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('MedicalAppointmentsSelectionPage')}>
+            <TouchableOpacity 
+  style={styles.option} 
+  onPress={() => navigation.navigate('Salud', { 
+    screen: 'MedicalAppointmentsSelectionPage'
+  })}
+>
                 <Ionicons name="calendar" size={24} color="#3B49B4" style={styles.icon} />
                 <View>
                     <Text style={styles.optionTitle}>Citas médicas</Text>

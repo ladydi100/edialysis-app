@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import BackButton from '../components/BackButton';
 
 const SelectValuesPage = () => {
   const navigation = useNavigation();
@@ -13,6 +14,18 @@ const SelectValuesPage = () => {
     { id: 'heartRate', label: 'Frecuencia cardíaca' },
     { id: 'weight', label: 'Peso' },
   ];
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => (
+        <BackButton 
+          navigation={navigation} 
+          onPress={() => navigation.navigate('Salud', { screen: 'HealthMain' })}
+        />
+      ),
+    });
+  }, [navigation]);
 
   // Función para seleccionar/deseleccionar parámetros
   const toggleParameter = (parameterId) => {

@@ -1,4 +1,3 @@
-// navigation/AppNavigator.js
 import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../context/AuthContext';
@@ -10,7 +9,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import AddMedicationPage from '../pages/AddMedicationPage';
 import MedicationDetail from '../pages/MedicationDetail';
 import MedicalAppointmentsSelectionPage from '../pages/MedicalAppointmentsSelectionPage';
-//import AppointmentDateTimeSelection from '../pages/AppointmentDateTimeSelection';
+import { Ionicons } from '@expo/vector-icons'; // Añade esta línea
 // Importaciones de pantallas de salud
 import SelectValuesPage from '../pages/SelectValuesPage';
 import SelectedValuesPage from '../pages/SelectedValuesPage';
@@ -24,7 +23,7 @@ export default function AppNavigator() {
   const { userToken } = useContext(AuthContext);
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       {userToken ? (
         <>
           {/* Navegación principal con pestañas */}
@@ -35,17 +34,17 @@ export default function AppNavigator() {
           />
 
           {/* Pantallas modales/emergentes (no están en las tabs) */}
-          <Stack.Screen name="AddMedication" component={AddMedicationPage} />
-          <Stack.Screen name="MedicationDetail" component={MedicationDetail} />
-          <Stack.Screen name="MedicalAppointmentsSelectionPage" component={MedicalAppointmentsSelectionPage} />
-           
          
-          {/* Pantallas de valores de salud */}
+          <Stack.Screen name="MedicationDetail" component={MedicationDetail} />
+        
+      
+
+          {/* Pantallas de valores de salud 
           <Stack.Screen name="SelectValues" component={SelectValuesPage} />
           <Stack.Screen name="SelectedValues" component={SelectedValuesPage} />
           <Stack.Screen name="HeartRate" component={HeartRatePage} />
           <Stack.Screen name="BloodPressure" component={BloodPressurePage} />
-          <Stack.Screen name="Weight" component={WeightPage} />
+          <Stack.Screen name="Weight" component={WeightPage} />*/}
         </>
       ) : (
         <>

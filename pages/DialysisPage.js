@@ -1,21 +1,14 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  ScrollView, 
-  StyleSheet, 
-  ActivityIndicator, 
-  Modal, 
-  TextInput,
-  Alert,
-  FlatList 
-} from 'react-native';
+import React, { useEffect, useState, useContext ,  useLayoutEffect} from 'react';
+import {   View, Text, TouchableOpacity, ScrollView, StyleSheet, 
+  ActivityIndicator, Modal, TextInput, Alert, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { getDialysisTreatment, updateDialysisTreatment } from '../services/dialysisService';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
+import BackButton from '../components/BackButton';
+
 
 const DialysisPage = () => {
     const navigation = useNavigation();
@@ -31,6 +24,14 @@ const DialysisPage = () => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false); // Añadido esta línea
     const [isUpdating, setIsUpdating] = useState(false);
+
+ useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
+
 
     useEffect(() => {
         loadTreatmentData();

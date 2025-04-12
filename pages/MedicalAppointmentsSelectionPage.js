@@ -1,13 +1,16 @@
 // pages/MedicalAppointmentsSelectionPage.js
-import React, { useState, useContext , useEffect} from 'react';
+import React, { useState, useContext , useEffect, useLayoutEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView,  Alert, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AuthContext } from '../context/AuthContext';
 import { saveMedicalAppointment, getMedicalAppointments,  updateMedicalAppointment,
   deleteMedicalAppointment } from '../services/medicalAppointmentService';
   import { Ionicons } from '@expo/vector-icons';
+  import BackButton from '../components/BackButton';
+  import { useNavigation } from '@react-navigation/native';
 
 const MedicalAppointmentsSelectionPage = () => {
+   const navigation = useNavigation();
   const { userToken } = useContext(AuthContext);
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
   const [date, setDate] = useState(new Date());
@@ -22,6 +25,14 @@ const MedicalAppointmentsSelectionPage = () => {
   const [editDate, setEditDate] = useState('');
   const [editTime, setEditTime] = useState('');
   const [editSpecialty, setEditSpecialty] = useState('');
+
+
+    useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => <BackButton navigation={navigation} />
+    });
+  }, [navigation]);
 
   const formatDateToSpanish = (date) => {
     const options = {
@@ -167,6 +178,7 @@ const openEditModal = (appointment) => {
 
 
   return (
+     <View style={{ flex: 1 }}>
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Citas médicas</Text>
 
@@ -265,7 +277,7 @@ const openEditModal = (appointment) => {
           <Text style={styles.noAppointmentsText}>No tienes citas registradas</Text>
         )}
       </View>
-
+ </ScrollView>
       {/* Modal de Edición/Eliminación */}
       <Modal
         animationType="slide"
@@ -375,7 +387,7 @@ const openEditModal = (appointment) => {
           </View>
         </View>
       </Modal>
-    </ScrollView>
+        </View>
   );
 };
 

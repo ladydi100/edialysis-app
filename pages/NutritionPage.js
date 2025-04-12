@@ -1,7 +1,8 @@
 // NutritionPage.js - Página de Nutrición actualizada
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 const recipes = [
     {
@@ -38,6 +39,21 @@ const recipes = [
 
 const NutritionPage = () => {
     const navigation = useNavigation();
+  useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: 'Recetas de Nutrición',
+            headerLeft: () => (
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate('Home')}
+                    style={{ marginLeft: 15 }}
+                >
+                    <Ionicons name="arrow-back" size={26} color="#3B49B4" />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
+
+
 
     return (
         <ScrollView style={styles.container}>

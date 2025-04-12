@@ -1,11 +1,20 @@
 // DialysisSetupPage.js - Selección del tipo de diálisis
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState ,  useLayoutEffect} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BackButton from '../components/BackButton';
 
 const DialysisSetupPage = () => {
     const navigation = useNavigation();
     const [selectedType, setSelectedType] = useState(null);
+
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} confirm={true} />
+  });
+}, [navigation]);
+
 
     const dialysisTypes = [
         'Hemodiálisis en el centro de diálisis',

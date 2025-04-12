@@ -1,12 +1,12 @@
 // DialysisRemindersPage.js - Página para configurar recordatorios de diálisis
-import React, { useState, useEffect, useContext  } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect  } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Notifications from 'expo-notifications';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { saveDialysisTreatment } from '../services/dialysisService';
-
+import BackButton from '../components/BackButton';
 
 
 const DialysisRemindersPage = () => {
@@ -39,6 +39,12 @@ const DialysisRemindersPage = () => {
     Notifications.requestPermissionsAsync();
   }, [startDate, parsedStartDate]);
 
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
 
  const handleSetReminder = (day) => {
     setSelectedDay(day);

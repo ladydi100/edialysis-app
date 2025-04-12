@@ -1,15 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
+import { useNavigation } from '@react-navigation/native';
+
 
 const AnalyticsPage = () => {
+  const navigation = useNavigation();
   const [documents, setDocuments] = useState([
     { id: '1', name: 'Analítica 1' },
     { id: '2', name: 'Analítica 2' },
     { id: '3', name: 'Analítica 2' },
     { id: '4', name: 'Analítica 2' },
   ]);
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Mis Analíticas',
+      headerLeft: () => (
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('Home')}
+          style={{ marginLeft: 15 }}
+        >
+          <Ionicons name="arrow-back" size={26} color="#3B49B4" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
 
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
@@ -27,7 +46,7 @@ const AnalyticsPage = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="arrow-back" size={24} color="black" />
+       
         <Text style={styles.title}>Analíticas</Text>
       </View>
 

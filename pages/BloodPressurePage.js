@@ -1,9 +1,10 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect, useLayoutEffect  } from 'react';
 import { View, Text, TextInput, StyleSheet, Switch, TouchableOpacity,Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import API_URL from '../config/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from '../components/BackButton';
 
 const BloodPressurePage = () => {
   const navigation = useNavigation();
@@ -13,6 +14,13 @@ const BloodPressurePage = () => {
   const [diastolic, setDiastolic] = useState('');
   const [loading, setLoading] = useState(true); // Para mostrar un indicador de carga
   const [error, setError] = useState(null); // Para manejar errores
+
+ useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
 
  useEffect(() => {
     const fetchLatestBloodPressure = async () => {

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext,  useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused , useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { getMedicationsByDate, updateMedicationTakenStatus } from '../services/medicationService';
 import WeeklyCalendar from '../components/WeeklyCalendar';
@@ -14,6 +14,21 @@ const MedicationPage = ({ navigation }) => {
   const [hasUserSelectedDate, setHasUserSelectedDate] = useState(false); 
   const { userToken } = useContext(AuthContext);
   const isFocused = useIsFocused(); 
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Medicación',
+      headerLeft: () => (
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('Home')}
+          style={{ marginLeft: 15 }}
+        >
+          <Ionicons name="arrow-back" size={26} color="#3B49B4" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     if (isFocused && !hasUserSelectedDate) {
@@ -167,7 +182,10 @@ const radius = 40; // Radio del círculo
       </View>
 
       <View style={styles.header2}>
-        <TouchableOpacity onPress={() => navigation.navigate('AddMedication')}>
+       <TouchableOpacity 
+  style={styles.addButton}
+  onPress={() => navigation.navigate('Medicación', { screen: 'AddMedication' })}
+>
           <Text style={styles.addButton}>+ Añadir nuevo</Text>
         </TouchableOpacity>
       </View>

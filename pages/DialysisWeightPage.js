@@ -1,12 +1,21 @@
 // DialysisWeightPage.js - Página para ingresar el peso seco
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import BackButton from '../components/BackButton';
 
 const DialysisWeightPage = () => {
   const navigation = useNavigation();
    const route = useRoute();
   const [weight, setWeight] = useState('');
+
+
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
 
   const handleNext = () => {
         Keyboard.dismiss();
@@ -55,7 +64,7 @@ const DialysisWeightPage = () => {
           </View>
           
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.buttonText}>Guardar</Text>
+            <Text style={styles.buttonText}>Siguiente</Text>
           </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>

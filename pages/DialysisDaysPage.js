@@ -1,7 +1,8 @@
 // DialysisDaysPage.js - Selección de días de diálisis
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import BackButton from '../components/BackButton';
 
 const DialysisDaysPage = () => {
   const navigation = useNavigation();
@@ -18,6 +19,13 @@ const DialysisDaysPage = () => {
         : [...prevDays, day]
     );
   };
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
+
 
  const handleNext = () => {
     if (selectedDays.length > 0) {

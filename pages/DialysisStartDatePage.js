@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation , useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import BackButton from '../components/BackButton';
 
 const DialysisStartDatePage = () => {
     const navigation = useNavigation();
@@ -10,13 +11,21 @@ const DialysisStartDatePage = () => {
     const [date, setDate] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
 
+
+
+
      const handleNext = () => {
     navigation.navigate('DialysisWeightPage', { 
       startDate: date.toISOString(), 
       treatmentType: route.params?.treatmentType 
     });
   };
-
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
 
 
   

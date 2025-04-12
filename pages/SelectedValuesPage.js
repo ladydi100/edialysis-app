@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useLayoutEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, fetchLatestValues } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import API_URL from '../config/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from '../components/BackButton';
+
 
 const SelectedValuesPage = () => {
   const route = useRoute();
@@ -17,6 +19,14 @@ const SelectedValuesPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+ useLayoutEffect(() => {
+  navigation.setOptions({
+     headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
+
 
   useEffect(() => {
     const fetchLatestValues = async () => {

@@ -153,7 +153,7 @@ const MedicalAppointments = () => {
 
 // Estilos combinados e integrados
 const styles = StyleSheet.create({
-  container: { backgroundColor: '#FAFAFA', padding: 20 },
+  container: { backgroundColor: '#FAFAFA', padding: 20 , paddingTop: 0},
 
   // Header
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },

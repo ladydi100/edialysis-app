@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Switch, ScrollView, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 import { addMedication } from '../services/medicationService';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import BackButton from '../components/BackButton';
 
 const colors = [
   { label: '🔴', value: '#FF0000', color: '#FF0000' }, // Rojo
@@ -40,7 +40,20 @@ const AddMedicationPage = ({ navigation }) => {
   const [selectedTimeIndex, setSelectedTimeIndex] = useState(null);
   const [selectedDays, setSelectedDays] = useState([]);
   const [showDaysModal, setShowDaysModal] = useState(false);
+  //const navigation = useNavigation();
 
+
+    useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Añadir Medicamento',
+      headerLeft: () => (
+        <BackButton 
+          navigation={navigation}
+          onPress={() => navigation.goBack()}
+        />
+      ),
+    });
+  }, [navigation]);
 
   const handleSave = async () => {
     const medicationData = {

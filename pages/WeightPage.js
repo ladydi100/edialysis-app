@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import API_URL from '../config/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from '../components/BackButton';
 
 const WeightPage = () => {
   const navigation = useNavigation();
@@ -13,6 +14,12 @@ const WeightPage = () => {
  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+   useLayoutEffect(() => {
+  navigation.setOptions({
+    headerTitle: '',
+    headerLeft: () => <BackButton navigation={navigation} />
+  });
+}, [navigation]);
 
  useEffect(() => {
     const fetchLatestWeight = async () => {
