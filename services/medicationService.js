@@ -87,3 +87,22 @@ export const softDeleteMedication = async (time_id, userToken) => {
     throw error;
   }
 };
+
+
+export const updateMedicationAlarmStatus = async (time_id, alarmEnabled, token) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/medications/${time_id}/alarm`,
+      { alarmEnabled },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando estado de alarma:', error);
+    throw error;
+  }
+};

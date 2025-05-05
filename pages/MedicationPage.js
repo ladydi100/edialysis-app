@@ -50,7 +50,7 @@ if (isFocused) {
     }
 
    // fetchMedications(selectedDate);
-      refreshMedications();
+  //    refreshMedications();
   }, [isFocused, selectedDate]);
 
   // En MedicationPage.js
@@ -59,6 +59,7 @@ if (isFocused) {
 
 
 const fetchMedications = async (date) => {
+    let isCancelled = false;
   try {
     // Ajuste de zona horaria para asegurar el día correcto
     const adjustedDate = new Date(date);
@@ -71,20 +72,35 @@ const fetchMedications = async (date) => {
     
     console.log('Medicamentos recibidos:', meds); // Para debug
     
+    if (!isCancelled) {
     const medicationsWithTaken = meds.map(med => ({
       ...med,
       time: new Date(`1970-01-01T${med.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      taken: med.taken || false
+      taken: med.taken || false,  
+      alarmEnabled: Boolean(med.alarm_enabled),
     }));
 
     setMedications(medicationsWithTaken);
+    }
   } catch (error) {
-    console.error('Error fetching medications:', error);
+     if (!isCancelled) {
+      console.error('Error fetching medications:', error);
+    }
+   // console.error('Error fetching medications:', error);
   }
+   return () => {
+    isCancelled = true;
+  };
 };
 
 
-
+const handleUpdateAlarmStatus = (time_id, newAlarmStatus) => {
+  setMedications(prevMeds =>
+    prevMeds.map(med =>
+      med.time_id === time_id ? { ...med, alarmEnabled: newAlarmStatus } : med
+    )
+  );
+};
 
 
 
@@ -190,9 +206,11 @@ const radius = 40; // Radio del círculo
   const totalMedications = medications.length;
 
 const handleMedicationPress = (medication) => {
+
+  console.log("Medicamento seleccionado-----:", medication);
   setSelectedMedication(medication || { 
     taken: false,
-    alarmEnabled: false,
+    alarmEnabled: Boolean(medication.alarm_enabled),
     // valores por defecto
   });
   setModalVisible(true);
@@ -380,6 +398,7 @@ const refreshMedications = async () => {
         selectedDate={selectedDate}
         onToggleTaken={handleToggleTaken}
       refreshMedications={refreshMedications}
+       onUpdateAlarmStatus={handleUpdateAlarmStatus}
       />
     
     </View>

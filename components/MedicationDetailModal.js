@@ -3,7 +3,8 @@ import { View, Text, Modal, TouchableOpacity, StyleSheet, Switch, Animated, Easi
 import { Ionicons } from '@expo/vector-icons';
 import EditMedicationModal from './EditMedicationModal';
 import { AuthContext } from '../context/AuthContext';
-import { softDeleteMedication  } from '../services/medicationService';
+import { softDeleteMedication , updateMedicationAlarmStatus } from '../services/medicationService';
+
 
 
 
@@ -20,12 +21,13 @@ const MedicationDetailModal = ({
     time: ''
   },
   onClose, 
-  onToggleAlarm, 
+ 
   onEdit, 
   onDelete, 
   selectedDate,
   onToggleTaken,
-  refreshMedications 
+  refreshMedications,
+  onUpdateAlarmStatus 
 }) => {
 
   const { userToken } = useContext(AuthContext);
@@ -40,26 +42,18 @@ const MedicationDetailModal = ({
 
 
  useEffect(() => {
-setLocalTaken(medication.taken);
-setLocalAlarm(medication.alarmEnabled);
+  if (visible && medication) {
+    console.log("🎯 Modal recibido medication:", medication); 
+    const alarmValue = medication.alarmEnabled ? 1 : 0;
+    const takenValue = medication.taken ? 1 : 0;
 
-   // Animar el switch cuando cambia el estado
-    Animated.timing(takenAnim, {
-      toValue: medication.taken ? 1 : 0,
-      duration: 300,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-  }, [medication]);
+    setLocalAlarm(medication.alarmEnabled);
+    setLocalTaken(medication.taken);
 
-    const animateSwitch = (animRef, toValue, callback) => {
-    Animated.timing(animRef, {
-      toValue,
-      duration: 200,
-      easing: Easing.out(Easing.quad),
-      useNativeDriver: false,
-    }).start(callback);
-  };
+    alarmAnim.setValue(alarmValue);
+    takenAnim.setValue(takenValue);
+  }
+}, [visible, medication]);
 
 // Estilo del Switch animado
  const handleTakenToggle = () => {
@@ -79,17 +73,32 @@ setLocalAlarm(medication.alarmEnabled);
     });
   };
 
+const animateSwitch = (animRef, toValue, callback) => {
+  Animated.timing(animRef, {
+    toValue,
+    duration: 200,
+    easing: Easing.out(Easing.quad),
+    useNativeDriver: false,
+  }).start(callback);
+};
 
   const handleAlarmToggle = () => {
-    const newValue = !localAlarm;
-    setLocalAlarm(newValue);
-    animateSwitch(alarmAnim, newValue ? 1 : 0, () => {
-      onToggleAlarm().catch(() => {
-        setLocalAlarm(!newValue);
-        animateSwitch(alarmAnim, newValue ? 0 : 1);
-      });
-    });
-  };
+  const newValue = !localAlarm;
+  setLocalAlarm(newValue);
+
+  animateSwitch(alarmAnim, newValue ? 1 : 0, async () => {
+    try {
+      await updateMedicationAlarmStatus(medication.time_id, newValue, userToken);
+      onUpdateAlarmStatus(medication.time_id, newValue); 
+  
+    } catch (error) {
+      // Revertir si falla
+      setLocalAlarm(!newValue);
+      animateSwitch(alarmAnim, newValue ? 0 : 1);
+      Alert.alert('Error', 'No se pudo actualizar el estado de la alarma');
+    }
+  });
+};
 
 
  const handleDelete = async () => {
@@ -171,7 +180,7 @@ const switchStyle = (anim) => ({
       weekday: 'long', 
       day: 'numeric', 
       month: 'long',
-      timeZone: 'UTC'
+    //  timeZone: 'UTC'
     };
     return date.toLocaleDateString('es-ES', options);
   };
@@ -197,7 +206,7 @@ const handleSaveEdit = async (editedData) => {
     Alert.alert('Error al guardar los cambios');
   }
 };
-
+/*
 const handleEdit = (editedMedication) => {
   setMedications(prevMeds => 
     prevMeds.map(med => 
@@ -205,7 +214,7 @@ const handleEdit = (editedMedication) => {
     )
   );
   refreshMedications(); // Opcional: doble verificación con nueva carga
-};
+};*/
 
 
   return (
@@ -217,42 +226,40 @@ const handleEdit = (editedMedication) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <View style={[styles.colorDot, { backgroundColor: medication.color }]} />
-            <Text style={styles.medicationName}>{medication.name}   
-             
-
-            </Text>
-              <TouchableOpacity onPress={handleDelete} style={{ marginRight: 130 }}>
-                <Ionicons name="trash-outline" size={24} color="#EF4444" />
-              </TouchableOpacity> 
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color="#6B7280" />
-            </TouchableOpacity>
-            
-          </View>
+         <View style={styles.modalHeader}>
+  <View style={[styles.colorDot, { backgroundColor: medication.color }]} />
+  <Text style={styles.medicationName}>{medication.name}</Text>
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <TouchableOpacity onPress={handleDelete} style={{ marginRight: 20 }}>
+      <Ionicons name="trash-outline" size={24} color="#EF4444" />
+    </TouchableOpacity> 
+    <TouchableOpacity onPress={onClose}>
+      <Ionicons name="close" size={24} color="#6B7280" />
+    </TouchableOpacity>
+  </View>
+</View>
 
           <View style={styles.modalContent}>
             <Text style={styles.dosageText}>
              {formatDate(displayDate)} - {medication.time}
             </Text>
             
-            <Text style={styles.dateText}>
-              Tomar ({medication.dosage}) de {medication.name} {medication.notes}, según indicación médica.
-            </Text>
+          <Text style={styles.dateText}>
+  Tomar ({medication.dosage}) de {medication.name} {medication.notes ? String(medication.notes) : ''}, según indicación médica.
+</Text>
             
         {/* Switch para estado "tomado" */}
             <View style={styles.switchRow}>
               <Text style={styles.switchLabel}>Desactivar alarma</Text>
               <TouchableOpacity 
-                onPress={handleTakenToggle}
+                onPress={handleAlarmToggle}
                 activeOpacity={0.9}
               >
-                <Animated.View style={switchStyle(takenAnim).track}>
-                  <Animated.View style={switchStyle(takenAnim).thumb} />
-                </Animated.View>
-              </TouchableOpacity>
-            </View>
+               <Animated.View style={switchStyle(alarmAnim).track}> 
+      <Animated.View style={switchStyle(alarmAnim).thumb} /> 
+    </Animated.View>
+  </TouchableOpacity>
+</View>
         
 
             

@@ -177,9 +177,9 @@ useFocusEffect(
         <View style={[styles.healthCard, styles.cardTeal]}>
           <Text style={styles.healthTitle}>Presión arterial</Text>
           <Text style={styles.healthValue}>
-            {healthData.bloodPressure ? 
-              `${healthData.bloodPressure.systolic}/${healthData.bloodPressure.diastolic} mmHg` : 
-              '--/--'}
+           {healthData.bloodPressure?.systolic != null && healthData.bloodPressure?.diastolic != null
+    ? `${healthData.bloodPressure.systolic}/${healthData.bloodPressure.diastolic} mmHg`
+    : '--/--'}
           </Text>
         </View>
         <View style={[styles.healthCard, styles.cardRed]}>
