@@ -1,0 +1,19 @@
+# Ignorar dependencias
+node_modules/
+
+# Ignorar directorios de compilación
+bin/
+obj/
+
+# Archivos de usuario de Visual Studio
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de logs
+*.log
