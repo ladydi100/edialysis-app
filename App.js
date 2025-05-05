@@ -4,27 +4,54 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './context/AuthContext';
 import AppNavigator from './navigation/AppNavigator';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Alert } from 'react-native';
+import { registerForPushNotificationsAsync , scheduleMedicationNotifications } from './services/notificationService';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });
 
+
+
+
+
+
+
+
 export default function App() {
   useEffect(() => {
-    async function registerForPushNotifications() {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Permisos de notificación no concedidos');
-        return;
-      }
+  const setupNotifications = async () => {
+    await registerForPushNotificationsAsync();
+
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('medication-reminders', {
+        name: 'Recordatorios de Medicación',
+        importance: Notifications.AndroidImportance.MAX,
+        sound: 'default',
+      });
     }
-    registerForPushNotifications();
-  }, []);
+
+   // ⚠️ Aquí agregamos la llamada para agendar notificaciones del día actual
+    const today = new Date();
+    await scheduleMedicationNotifications(today);
+
+
+
+    Notifications.addNotificationReceivedListener(notification => {
+      console.log('🔔 Notificación recibida:', notification);
+    });
+
+    Notifications.addNotificationResponseReceivedListener(response => {
+      console.log('📲 Respuesta del usuario a la notificación:', response);
+    });
+  };
+
+  setupNotifications();
+}, []);
 
   return (
     <AuthProvider>
@@ -34,5 +61,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-
-

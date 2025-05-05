@@ -9,20 +9,22 @@ import Svg, { Circle, G } from 'react-native-svg';
 import MedicationDetailModal from '../components/MedicationDetailModal';
 import { updateMedication } from '../services/medicationService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { scheduleMedicationNotifications } from '../services/notificationService';
+import * as Notifications from 'expo-notifications';
 
 
 const MedicationPage = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(new Date()); 
   const [medications, setMedications] = useState([]);
   const [hasUserSelectedDate, setHasUserSelectedDate] = useState(false); 
+    const [modalVisible, setModalVisible] = useState(false);
   const { userToken } = useContext(AuthContext);
   const isFocused = useIsFocused(); 
  const [selectedMedication, setSelectedMedication] = useState({
   taken: false,
   alarmEnabled: false,
 });
-  const [modalVisible, setModalVisible] = useState(false);
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -46,20 +48,18 @@ const MedicationPage = ({ navigation }) => {
 
   useEffect(() => {
 if (isFocused) {
+    console.log('📥 useEffect ejecutado - intentando obtener medicaciones');
       fetchMedications(selectedDate); // Vuelve a cargar los datos
     }
-
-   // fetchMedications(selectedDate);
-  //    refreshMedications();
   }, [isFocused, selectedDate]);
 
-  // En MedicationPage.js
 
   
 
 
 const fetchMedications = async (date) => {
     let isCancelled = false;
+     console.log('🧪 Ejecutando fetchMedications con fecha:', date);
   try {
     // Ajuste de zona horaria para asegurar el día correcto
     const adjustedDate = new Date(date);
@@ -69,19 +69,29 @@ const fetchMedications = async (date) => {
     console.log(`Buscando medicamentos para ${formattedDate}`);
     
     const meds = await getMedicationsByDate(formattedDate, userToken);
-    
-    console.log('Medicamentos recibidos:', meds); // Para debug
-    
-    if (!isCancelled) {
-    const medicationsWithTaken = meds.map(med => ({
+    console.log('Medicamentos recibidos:', meds);
+
+
+     const medicationsWithTaken = meds.map(med => ({
       ...med,
       time: new Date(`1970-01-01T${med.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       taken: med.taken || false,  
       alarmEnabled: Boolean(med.alarm_enabled),
     }));
 
+    
+    if (!isCancelled) {
+   
     setMedications(medicationsWithTaken);
     }
+
+    // 🔔 Programar notificaciones si es hoy
+    const today = new Date().toISOString().split('T')[0];
+    if (formattedDate === today) {
+      await scheduleMedicationNotifications(adjustedDate);
+    }
+
+
   } catch (error) {
      if (!isCancelled) {
       console.error('Error fetching medications:', error);
@@ -289,8 +299,17 @@ const refreshMedications = async () => {
   } catch (error) {
     console.error('Error refreshing medications:', error);
   }
-};
 
+/*
+const today = new Date().toISOString().split('T')[0];
+if (formattedDate === today) {
+  await scheduleMedicationNotifications(new Date());
+}
+
+*/
+
+
+};
 
 
 
@@ -386,6 +405,11 @@ const refreshMedications = async () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+
+
+
+
 
          <MedicationDetailModal
          key={selectedMedication?.time_id || 'modal'}
@@ -520,5 +544,6 @@ const styles = StyleSheet.create({
     color: '#3B49B4',
   },
 });
+
 
 export default MedicationPage;

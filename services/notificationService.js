@@ -1,102 +1,114 @@
+// src/services/notificationService.js
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
-import { Platform } from 'react-native';
+import { getMedicationsByDate } from './medicationService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Configuración inicial de notificaciones
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
+export const registerForPushNotificationsAsync = async () => {
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== 'granted') {
+    console.warn('🚫 Permiso de notificaciones no concedido');
+     return;
+  }
+
+if (Platform.OS === 'android') {
+   await Notifications.setNotificationChannelAsync('medication-reminders', {
+  name: 'Recordatorios de Medicación',
+  importance: Notifications.AndroidImportance.MAX, // ⚠️ CAMBIADO A MAX
+  sound: 'default',
+  vibrationPattern: [0, 250, 250, 250],
+  lightColor: '#FF231F7C',
 });
-
-// Función para programar notificaciones recurrentes
-export const scheduleDialysisNotifications = async (treatmentData) => {
-  // 1. Cancelar notificaciones previas
-  await Notifications.cancelAllScheduledNotificationsAsync();
-
-  // 2. Verificar si hay días programados
-  if (!treatmentData?.days || treatmentData.days.length === 0) return;
-
-  // 3. Obtener fecha de inicio (usar hoy si no hay fecha)
-  const startDate = treatmentData.start_date 
-    ? new Date(treatmentData.start_date) 
-    : new Date();
-
-  // 4. Programar para cada día
-  for (const day of treatmentData.days) {
-    if (!day.reminder_time) continue;
-
-    const [hours, minutes] = day.reminder_time.split(':').map(Number);
-    
-    await scheduleWeeklyNotification(
-      day.day_of_week, 
-      hours, 
-      minutes, 
-      startDate
-    );
   }
+
+
+
 };
 
-// Función auxiliar para programar notificación semanal
-const scheduleWeeklyNotification = async (weekday, hours, minutes, startDate) => {
-  const weekdayIndex = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
-    .indexOf(weekday);
 
-  // Calcular próxima ocurrencia del día después de la fecha de inicio
+/*
+
+const convertToTodayDate = (timeStr) => {
+  const [hour, minute] = timeStr.split(':').map(Number);
   const now = new Date();
-  const nextDate = new Date(startDate);
-  
-  // Ajustar a la próxima ocurrencia del día programado
-  while (nextDate.getDay() !== weekdayIndex || nextDate < now) {
-    nextDate.setDate(nextDate.getDate() + 1);
-  }
-
-  // Configurar hora exacta
-  nextDate.setHours(hours, minutes, 0, 0);
-
-  // Programar notificación recurrente (semanal)
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Recordatorio de Diálisis",
-      body: `Tienes programado tu tratamiento para hoy a las ${day.reminder_time}`,
-      sound: true,
-      data: { type: 'dialysis-reminder' },
-    },
-    trigger: {
-      repeats: true,
-      weekday: weekdayIndex + 1, // 1-7 (Domingo=1)
-      hour: hours,
-      minute: minutes,
-      // Notificar 1 hora antes (opcional)
-      seconds: 0,
-    },
-  });
-
-  // Notificación de recordatorio (1 hora antes)
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Recordatorio de Diálisis",
-      body: `En 1 hora tienes programado tu tratamiento a las ${day.reminder_time}`,
-      sound: true,
-    },
-    trigger: {
-      repeats: true,
-      weekday: weekdayIndex + 1,
-      hour: hours - 1, // 1 hora antes
-      minute: minutes,
-      seconds: 0,
-    },
-  });
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
 };
 
-// Pedir permisos al iniciar la app
-export const registerForPushNotifications = async () => {
-  if (!Device.isDevice) return;
+*/
 
-  const { status } = await Notifications.getPermissionsAsync();
-  if (status !== 'granted') {
-    await Notifications.requestPermissionsAsync();
+const convertToTodayDate = (timeStr) => {
+  const [hour, minute] = timeStr.split(':').map(Number);
+  const now = new Date();
+  return new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    hour,
+    minute,
+    0,
+    0
+  );
+};
+
+
+
+
+export const scheduleMedicationNotifications = async (date) => {
+  if (!date || typeof date.toISOString !== 'function') {
+    console.warn('⚠️ Parámetro inválido en scheduleMedicationNotifications:', date);
+    return;
+  }
+
+  const token = await AsyncStorage.getItem('userToken');
+  const formattedDate = date.toISOString().split('T')[0];
+
+  try {
+    const medications = await getMedicationsByDate(formattedDate, token);
+
+    for (const med of medications) {
+      const taken = med.taken === 1 || med.taken === true;
+      const alarm = med.alarm_enabled === 1 || med.alarm_enabled === true;
+
+      if (!alarm || taken) continue;
+
+      const alarmTime = convertToTodayDate(med.time);
+      const now = new Date();
+
+const secondsUntil = Math.floor((alarmTime.getTime() - now.getTime()) / 1000);
+
+console.log('resultado...', secondsUntil);
+      
+
+      if (secondsUntil > 0 && secondsUntil <= 300) {
+         console.log(`✅ Agendando notificación para ${med.name} a las ${alarmTime.toLocaleTimeString()}`);
+
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: `💊 ${med.name}`,
+            body: `Dosis: ${med.dosage}. ¡No olvides tomarlo!`,
+            sound: true,
+            priority: Notifications.AndroidNotificationPriority.HIGH,
+             channelId: 'medication-reminders',
+          },
+         trigger: {
+         
+  //  date: alarmTime, // usar objeto tipo Date correctamente
+      seconds: secondsUntil 
+  },
+        });
+
+        console.log(`⏰ Notificación agendada: ${med.name} a las ${med.time}`);
+      } else {
+        console.log(`⏩ Hora ya pasada para: ${med.name}, no se agenda.`);
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error al agendar notificaciones:', error);
   }
 };

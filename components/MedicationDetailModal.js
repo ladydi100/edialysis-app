@@ -175,15 +175,15 @@ const switchStyle = (anim) => ({
   if (!medication) return null;
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'long',
-    //  timeZone: 'UTC'
-    };
-    return date.toLocaleDateString('es-ES', options);
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, month - 1, day); // Esto evita que se interprete como UTC
+  const options = { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long',
   };
+  return date.toLocaleDateString('es-ES', options);
+};
 
 
 const displayDate = medication.date ? medication.date : 
