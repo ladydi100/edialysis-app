@@ -62,9 +62,8 @@ const fetchMedications = async (date) => {
      console.log('🧪 Ejecutando fetchMedications con fecha:', date);
   try {
     // Ajuste de zona horaria para asegurar el día correcto
-    const adjustedDate = new Date(date);
-    adjustedDate.setMinutes(adjustedDate.getMinutes() - adjustedDate.getTimezoneOffset());
-    const formattedDate = adjustedDate.toISOString().split('T')[0];
+    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Solo año/mes/día
+    const formattedDate = localDate.toISOString().split('T')[0];
     
     console.log(`Buscando medicamentos para ${formattedDate}`);
     
@@ -86,11 +85,11 @@ const fetchMedications = async (date) => {
     }
 
     
-    const today = new Date().toISOString().split('T')[0];
-    if (formattedDate === today) {
-      await scheduleMedicationNotifications(adjustedDate);
+     const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+    if (formattedDate === todayFormatted) {
+      await scheduleMedicationNotifications(localDate);
     }
-
 
   } catch (error) {
      if (!isCancelled) {
@@ -204,12 +203,12 @@ const handleToggleTaken = async (time_id, newTakenStatus) => {
     return (takenMedications / totalMedications) * 100;
   };
 
-  const percentageTaken = calculatePercentageTaken();
+  const percentageTaken = isNaN(calculatePercentageTaken()) ? 0 : calculatePercentageTaken();
 
 const radius = 40; // Radio del círculo
   const strokeWidth = 10; // Grosor del borde
   const circumference = 2 * Math.PI * radius; // Circunferencia del círculo
-  const progress = (percentageTaken / 100) * circumference; // Longitud del progreso
+  const progress = isNaN(percentageTaken) ? 0 : (percentageTaken / 100) * circumference;// Longitud del progreso
 
   // Cantidad de medicamentos tomados
   const takenMedications = medications.filter((med) => med.taken).length;
@@ -342,7 +341,7 @@ const refreshMedications = async () => {
                 fill="transparent"
                 strokeDasharray={circumference}
                 strokeDashoffset={circumference - progress} // Controla el progreso
-                strokeLinecap="round" // Bordes redondeados
+                strokeLinecap="round" 
               />
             </G>
           </Svg>

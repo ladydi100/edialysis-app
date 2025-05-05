@@ -14,7 +14,7 @@ const RegisterPage = ({ navigation }) => {
       Alert.alert('Registro exitoso', 'Tu cuenta ha sido creada correctamente');
       navigation.navigate('Login'); // Redirige a la pantalla de inicio de sesión
     } catch (error) {
-      console.error('Error en el registro:', error);
+     // console.error('Error en el registro:', error); /// descomentar para ver error
       Alert.alert('Error', error);
     }
   };

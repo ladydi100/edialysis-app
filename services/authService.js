@@ -8,11 +8,23 @@ export const loginUser = async (email, password) => {
     console.log('resultado--------', response.data.user);
      return {
       token: response.data.token,
-      user: response.data.user // Asegúrate de que el backend devuelva esta información
+      user: response.data.user 
     };
 
   } catch (error) {
-    console.error('Error en loginUser:', {
+    /*console.error('Error en loginUser:', {
+      message: error.message,
+      code: error.code,
+      config: error.config,
+      request: error.request ? "Sí" : "No",
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers
+      } : "No hay respuesta del servidor"
+    });*/ //// descomentar para ver error 
+
+console.log('Error en loginUser:', {
       message: error.message,
       code: error.code,
       config: error.config,

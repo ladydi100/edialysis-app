@@ -15,13 +15,19 @@ export const registerUser = async (name, lastname, email, password) => {
  
    
     if (error.response) {
-    console.error('Error en registerUser - Respuesta del servidor:', error.response.data);
+    /*console.error('Error en registerUser - Respuesta del servidor:', error.response.data);
     console.error('Estado HTTP:', error.response.status);
-    console.error('Headers:', error.response.headers);
+    console.error('Headers:', error.response.headers);*/
+    console.log('Error en registerUser - Respuesta del servidor:', error.response.data);
+    console.log('Estado HTTP:', error.response.status);
+    console.log('Headers:', error.response.headers);
+
   } else if (error.request) {
-    console.error('Error en registerUser - No se recibió respuesta:', error.request);
+   // console.error('Error en registerUser - No se recibió respuesta:', error.request);
+    console.log('Error en registerUser - No se recibió respuesta:', error.request);
   } else {
-    console.error('Error en registerUser - Configuración:', error.message);
+   // console.error('Error en registerUser - Configuración:', error.message);
+   console.log('Error en registerUser - Configuración:', error.message);
   }
   throw 'Hubo un problema al registrarse';
 

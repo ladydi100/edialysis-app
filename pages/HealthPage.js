@@ -22,7 +22,7 @@ const HealthPage = () => {
         </TouchableOpacity>
       ),
       headerStyle: {
-        shadowColor: 'transparent', // Elimina la sombra en iOS
+        shadowColor: 'transparent', 
         elevation: 0, d
       },
     });

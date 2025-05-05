@@ -32,15 +32,7 @@ if (Platform.OS === 'android') {
 };
 
 
-/*
 
-const convertToTodayDate = (timeStr) => {
-  const [hour, minute] = timeStr.split(':').map(Number);
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
-};
-
-*/
 
 const convertToTodayDate = (timeStr) => {
   const [hour, minute] = timeStr.split(':').map(Number);
