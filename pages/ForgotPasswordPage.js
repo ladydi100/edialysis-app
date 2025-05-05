@@ -5,7 +5,7 @@ const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
 
   const handleSend = () => {
-    // Aquí puedes agregar la lógica para enviar el correo de recuperación
+   
     alert(`Se enviará un correo a: ${email}`);
   };
 

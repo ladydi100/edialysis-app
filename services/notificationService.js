@@ -98,7 +98,7 @@ console.log('resultado...', secondsUntil);
           },
          trigger: {
          
-  //  date: alarmTime, // usar objeto tipo Date correctamente
+  
       seconds: secondsUntil 
   },
         });

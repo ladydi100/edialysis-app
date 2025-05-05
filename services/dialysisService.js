@@ -14,7 +14,7 @@ export const saveDialysisTreatment = async (treatmentData, token) => {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
-  //     timeout: 10000 // Añadir timeout
+
     });
      console.log('Respuesta del backend:', response.data);
     return response.data;

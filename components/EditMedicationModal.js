@@ -30,10 +30,7 @@ const [keyboardOffset, setKeyboardOffset] = useState(0);
 
   const handleSave = async () => {
     try {
-      // Llamar al servicio para actualizar el medicamento
-    //  await updateMedication(medication.time_id, editedMedication);
-      
-      // Notificar al componente padre que se guardaron los cambios
+  
       await onSave(editedMedication);
       onClose();
     } catch (error) {
@@ -47,7 +44,7 @@ const [keyboardOffset, setKeyboardOffset] = useState(0);
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       (e) => {
-        // Solo desplazar si es el campo de notas el que tiene foco
+
         if (notesInputRef.current?.isFocused()) {
           scrollToInput(notesInputRef.current);
         }
@@ -63,7 +60,7 @@ const [keyboardOffset, setKeyboardOffset] = useState(0);
  const scrollToInput = (reactNode) => {
     scrollViewRef.current?.scrollResponderScrollNativeHandleToKeyboard(
       findNodeHandle(reactNode),
-      100, // padding extra
+      100, 
       true
     );
   };
@@ -76,7 +73,7 @@ const [keyboardOffset, setKeyboardOffset] = useState(0);
     timeDate.setMinutes(parseInt(timeParts[1], 10));
     setSelectedTime(timeDate);
 
-   // Resetear el formulario cuando el modal se abre/cierra
+   
     setEditedMedication({
       name: medication.name,
       dosage: medication.dosage,

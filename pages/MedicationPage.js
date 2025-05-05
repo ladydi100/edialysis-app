@@ -85,7 +85,7 @@ const fetchMedications = async (date) => {
     setMedications(medicationsWithTaken);
     }
 
-    // 🔔 Programar notificaciones si es hoy
+    
     const today = new Date().toISOString().split('T')[0];
     if (formattedDate === today) {
       await scheduleMedicationNotifications(adjustedDate);
@@ -96,7 +96,7 @@ const fetchMedications = async (date) => {
      if (!isCancelled) {
       console.error('Error fetching medications:', error);
     }
-   // console.error('Error fetching medications:', error);
+
   }
    return () => {
     isCancelled = true;
@@ -119,7 +119,7 @@ const handleUpdateAlarmStatus = (time_id, newAlarmStatus) => {
     setHasUserSelectedDate(true); 
   };
 
-  // Función para formatear la fecha como "Lunes 25 enero"
+  
   const formatDate = (date) => {
     const dayOfWeek = date.toLocaleString('es-ES', { weekday: 'long' });
     const day = date.getDate();
@@ -136,7 +136,7 @@ const toggleMedication = async (time_id) => {
 
     const newTakenStatus = !medication.taken;
     
-    // Obtener la fecha en formato local sin conversión UTC
+   
     const year = selectedDate.getFullYear();
     const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const day = String(selectedDate.getDate()).padStart(2, '0');
@@ -252,8 +252,8 @@ const handleMedicationPress = (medication) => {
 
 
 const handleDelete = async () => {
-  console.log('Iniciando eliminación...'); // Debug frontend 1
-  console.log('ID a eliminar:', selectedMedication.time_id); // Debug frontend 2
+  console.log('Iniciando eliminación...'); 
+  console.log('ID a eliminar:', selectedMedication.time_id); 
   
   try {
     const response = await softDeleteMedication(
@@ -261,7 +261,7 @@ const handleDelete = async () => {
       userToken
     );
     
-    console.log('Respuesta del backend:', response); // Debug frontend 3
+    console.log('Respuesta del backend:', response); 
 
     if (response?.success) {
       // Recarga forzada
@@ -300,13 +300,7 @@ const refreshMedications = async () => {
     console.error('Error refreshing medications:', error);
   }
 
-/*
-const today = new Date().toISOString().split('T')[0];
-if (formattedDate === today) {
-  await scheduleMedicationNotifications(new Date());
-}
 
-*/
 
 
 };

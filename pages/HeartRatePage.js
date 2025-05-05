@@ -51,10 +51,7 @@ const HeartRatePage = () => {
        Alert.alert('Por favor, introduce un valor válido.');
       return;
     }
-/*if (isNaN(heartRateValue)) {
-      Alert.alert('Error', 'La frecuencia cardíaca debe ser un número válido.');
-      return;
-    }*/
+
       const token = await AsyncStorage.getItem('userToken');
 
     try {

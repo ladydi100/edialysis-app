@@ -33,7 +33,7 @@ useLayoutEffect(() => {
         weight, 
         selectedDays,
         treatmentType,
-        startDate // Pasar la fecha recibida
+        startDate 
       });
     } else {
       alert('Por favor, selecciona al menos un día.');

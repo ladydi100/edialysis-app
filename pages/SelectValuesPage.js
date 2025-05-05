@@ -127,10 +127,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
-    backgroundColor: 'transparent', // Checkbox sin seleccionar: transparente
+    backgroundColor: 'transparent', 
   },
   checkedBox: {
-    backgroundColor: '#3B49B4', // Checkbox seleccionado: azul corporativo
+    backgroundColor: '#3B49B4', 
   },
   itemText: {
     fontSize: 16,

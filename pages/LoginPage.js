@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, TextInput, Alert, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
-import { loginUser } from '../services/authService';  // servicio loginUser
+import { loginUser } from '../services/authService';  
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -13,7 +13,7 @@ const LoginPage = ({ navigation }) => {
 const handleLogin = async () => {
   try {
     const { token, user } = await loginUser(email, password);
-    login(token, user); // Pasar tanto el token como los datos del usuario
+    login(token, user); 
     await AsyncStorage.setItem('userToken', token);
     await AsyncStorage.setItem('userData', JSON.stringify(user));
     navigation.navigate('BottomTabNavigator');

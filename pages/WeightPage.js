@@ -55,10 +55,7 @@ const WeightPage = () => {
       return;
     }
 
-    /*   if (isNaN(weightValue)) {
-      Alert.alert('Error', 'El peso debe ser un número válido.');
-      return;
-    }*/
+  
      const token = await AsyncStorage.getItem('userToken');
 
        try {

@@ -82,7 +82,7 @@ const MedicalAppointments = () => {
             try {
               await deleteMedicalAppointment(currentAppointment.id, userToken);
               Alert.alert('Éxito', 'La cita ha sido anulada correctamente');
-              fetchAppointments(); // Recargar las citas después de eliminar
+              fetchAppointments(); 
             } catch (error) {
               console.error('Error deleting appointment:', error);
               Alert.alert('Error', 'No se pudo anular la cita');
@@ -134,7 +134,7 @@ const MedicalAppointments = () => {
       weekday: 'long', 
       day: 'numeric', 
       month: 'long',
-      timeZone: 'UTC' // Important to prevent date shifting
+      timeZone: 'UTC' 
     };
 
  const formattedDate = date.toLocaleDateString('es-ES', options);

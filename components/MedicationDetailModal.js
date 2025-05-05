@@ -31,10 +31,8 @@ const MedicationDetailModal = ({
 }) => {
 
   const { userToken } = useContext(AuthContext);
-  // Estado local para la animación
   const [localTaken, setLocalTaken] = useState(medication.taken);
   const [localAlarm, setLocalAlarm] = useState(medication.alarmEnabled);
-
   const takenAnim = useRef(new Animated.Value(medication.taken ? 1 : 0)).current;
   const alarmAnim = useRef(new Animated.Value(medication.alarmEnabled ? 1 : 0)).current;
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -60,13 +58,12 @@ const MedicationDetailModal = ({
     const newValue = !localTaken;
     setLocalTaken(newValue);
     
-    // Animar inmediatamente para feedback visual
+   
     animateSwitch(takenAnim, newValue ? 1 : 0, () => {
-      // Luego de la animación, llamar a la función para actualizar en el backend
+     
       if (medication.time_id) {
         onToggleTaken(medication.time_id, newValue).catch(() => {
-          // Si falla, revertir la animación y el estado
-          setLocalTaken(!newValue);
+                  setLocalTaken(!newValue);
           animateSwitch(takenAnim, newValue ? 0 : 1);
         });
       }
@@ -111,7 +108,7 @@ const animateSwitch = (animRef, toValue, callback) => {
         text: "Eliminar", 
         onPress: async () => {
           try {
-            console.log('Token:', userToken); // Verifica que el token no sea null
+            console.log('Token:', userToken); 
             console.log('Medication ID:', medication.time_id);
 
              const response = await softDeleteMedication(medication.time_id, userToken);
@@ -176,7 +173,7 @@ const switchStyle = (anim) => ({
 
   const formatDate = (dateString) => {
   const [year, month, day] = dateString.split('-').map(Number);
-  const date = new Date(year, month - 1, day); // Esto evita que se interprete como UTC
+  const date = new Date(year, month - 1, day); 
   const options = { 
     weekday: 'long', 
     day: 'numeric', 
@@ -206,15 +203,6 @@ const handleSaveEdit = async (editedData) => {
     Alert.alert('Error al guardar los cambios');
   }
 };
-/*
-const handleEdit = (editedMedication) => {
-  setMedications(prevMeds => 
-    prevMeds.map(med => 
-      med.time_id === editedMedication.time_id ? { ...med, ...editedMedication } : med
-    )
-  );
-  refreshMedications(); // Opcional: doble verificación con nueva carga
-};*/
 
 
   return (

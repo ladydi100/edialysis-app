@@ -6,7 +6,7 @@ import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
 import axios from 'axios';
 import API_URL from '../config/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MedicalAppointments from './MedicalAppointments'; // Asegúrate de que la ruta sea correcta
+import MedicalAppointments from './MedicalAppointments'; 
 import { getMedicationsByDate } from '../services/medicationService';
 import { updateMedicationTakenStatus } from '../services/medicationService';
 
@@ -27,7 +27,7 @@ const HomePage = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
  
-// Función para formatear la fecha como "Lunes 25 enero"
+
  const formatDate = (date) => {
     const dayOfWeek = date.toLocaleString('es-ES', { weekday: 'long' });
     const day = date.getDate();

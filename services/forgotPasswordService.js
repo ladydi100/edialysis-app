@@ -10,7 +10,7 @@ export const sendPasswordResetEmail = async (email) => {
   }
 };
 
-// AppNavigator.js (actualización)
+
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />;

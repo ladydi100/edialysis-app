@@ -1,4 +1,4 @@
-// components/MonthlyCalendar.js
+
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,7 +20,7 @@ const MonthlyCalendar = ({ onDateSelect, selectedDate }) => {
     
     const days = [];
     
-    // Días del mes anterior para completar la primera semana
+
     const prevMonthDays = firstDay.getDay();
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     for (let i = prevMonthDays - 1; i >= 0; i--) {
@@ -31,7 +31,7 @@ const MonthlyCalendar = ({ onDateSelect, selectedDate }) => {
       });
     }
     
-    // Días del mes actual
+
     const daysInMonth = lastDay.getDate();
     for (let i = 1; i <= daysInMonth; i++) {
       days.push({

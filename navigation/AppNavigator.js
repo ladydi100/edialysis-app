@@ -9,8 +9,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import AddMedicationPage from '../pages/AddMedicationPage';
 import MedicationDetail from '../pages/MedicationDetail';
 import MedicalAppointmentsSelectionPage from '../pages/MedicalAppointmentsSelectionPage';
-import { Ionicons } from '@expo/vector-icons'; // Añade esta línea
-// Importaciones de pantallas de salud
+import { Ionicons } from '@expo/vector-icons'; 
 import SelectValuesPage from '../pages/SelectValuesPage';
 import SelectedValuesPage from '../pages/SelectedValuesPage';
 import HeartRatePage from '../pages/HeartRatePage';

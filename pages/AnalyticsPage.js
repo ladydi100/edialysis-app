@@ -32,7 +32,7 @@ const AnalyticsPage = () => {
 
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: '*/*', // Acepta cualquier tipo de archivo
+      type: '*/*', 
       
     });
     

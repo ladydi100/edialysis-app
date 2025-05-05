@@ -12,8 +12,8 @@ const BloodPressurePage = () => {
 
   const [systolic, setSystolic] = useState('');
   const [diastolic, setDiastolic] = useState('');
-  const [loading, setLoading] = useState(true); // Para mostrar un indicador de carga
-  const [error, setError] = useState(null); // Para manejar errores
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
 
  useLayoutEffect(() => {
   navigation.setOptions({
@@ -41,7 +41,7 @@ const BloodPressurePage = () => {
         console.error('Error fetching latest blood pressure:', error);
          setError('Error al obtener los datos de presión arterial');
       }finally {
-        setLoading(false); // Finalizar la carga
+        setLoading(false); 
       }
     };
 

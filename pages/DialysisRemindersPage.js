@@ -13,7 +13,7 @@ const DialysisRemindersPage = () => {
   const navigation = useNavigation();
     const { userToken } = useContext(AuthContext);
   const route = useRoute();
-  //const { selectedDays, weight, treatmentType, startDate } = route.params || {};
+  
   
    const { 
     selectedDays = [], 
@@ -77,12 +77,7 @@ useLayoutEffect(() => {
         return;
       }
 
-    // Asegúrate de que startDate es un objeto Date válido
-   /* const parsedStartDate = new Date(startDate);
-    if (isNaN(parsedStartDate.getTime())) {
-      throw new Error('Fecha de inicio no válida');
-    }*/
-
+  
     // Preparar los datos para enviar al backend
       const daysData = Object.entries(reminders).map(([day, time]) => ({
         day,
@@ -91,12 +86,12 @@ useLayoutEffect(() => {
 
     const treatmentData = {
       treatment_type: treatmentType,
-      start_date: parsedStartDate.toISOString().split('T')[0], // Formato YYYY-MM-DD
+      start_date: parsedStartDate.toISOString().split('T')[0], 
       dry_weight: weight,
       days: daysData
     };
 
-    console.log('Datos a enviar:', treatmentData); // Para depuración
+    console.log('Datos a enviar:', treatmentData); 
 
     await saveDialysisTreatment(treatmentData, userToken);
     

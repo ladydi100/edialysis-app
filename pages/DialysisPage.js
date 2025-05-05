@@ -15,14 +15,14 @@ const DialysisPage = () => {
     const { userToken } = useContext(AuthContext);
     const [treatmentData, setTreatmentData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [editModalVisible, setEditModalVisible] = useState(false); // Añadido esta línea
+    const [editModalVisible, setEditModalVisible] = useState(false); 
     const [dayModalVisible, setDayModalVisible] = useState(false);
     const [currentField, setCurrentField] = useState(null);
-    const [currentDay, setCurrentDay] = useState(null); // Añadido esta línea
+    const [currentDay, setCurrentDay] = useState(null); 
     const [tempValue, setTempValue] = useState('');
-    const [tempTime, setTempTime] = useState(''); // Añadido esta línea
+    const [tempTime, setTempTime] = useState(''); 
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showTimePicker, setShowTimePicker] = useState(false); // Añadido esta línea
+    const [showTimePicker, setShowTimePicker] = useState(false); 
     const [isUpdating, setIsUpdating] = useState(false);
 
  useLayoutEffect(() => {
@@ -769,20 +769,20 @@ const styles = StyleSheet.create({
     },
 
      modalButtonText: {
-        fontSize: 13,        // Reducido ligeramente
+        fontSize: 13,        
         fontWeight: 'bold',
         textAlign: 'center',
     },
 
      modalButtonTextd: {
-        fontSize: 13,        // Reducido ligeramente
+        fontSize: 13,        
         fontWeight: 'bold',
         textAlign: 'center',
         marginLeft: 5
     },
 
        modalButtonTextg: {
-        fontSize: 13,        // Reducido ligeramente
+        fontSize: 13,        
         fontWeight: 'bold',
         textAlign: 'center',
           color: '#FAFAFA',
@@ -790,13 +790,13 @@ const styles = StyleSheet.create({
 
    modalActionButton: {
         flex: 1,
-        paddingVertical: 10,  // Reducido de 15 a 10
+        paddingVertical: 10,  
         paddingHorizontal: 5,
         borderRadius: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        marginHorizontal: 4,  // Espaciado más ajustado
-        minHeight: 40,       // Altura mínima definida
+        marginHorizontal: 4,  
+        minHeight: 40,     
     },
 
 

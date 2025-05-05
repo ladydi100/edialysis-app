@@ -1,5 +1,4 @@
-// navigation/BottomTabNavigator.js
-//import React from 'react';
+
 import React, { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -7,34 +6,23 @@ import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
-
-// Pantallas
 import HomePage from '../pages/HomePage';
 import MedicationPage from '../pages/MedicationPage';
 import HealthPage from '../pages/HealthPage';
 import NutritionPage from '../pages/NutritionPage';
 import AnalyticsPage from '../pages/AnalyticsPage';
-
-// Pantallas de Diálisis
 import DialysisPage from '../pages/DialysisPage';
 import DialysisSetupPage from '../pages/DialysisSetupPage';
 import DialysisStartDatePage from '../pages/DialysisStartDatePage';
 import DialysisDaysPage from '../pages/DialysisDaysPage';
 import DialysisWeightPage from '../pages/DialysisWeightPage';
 import DialysisRemindersPage from '../pages/DialysisRemindersPage';
-
-
-// pantalla de cita medica
 import MedicalAppointmentsSelectionPage from '../pages/MedicalAppointmentsSelectionPage';
-
-//pantalla Valores
 import SelectValuesPage from '../pages/SelectValuesPage';
 import SelectedValuesPage from '../pages/SelectedValuesPage';
 import BloodPressurePage from '../pages/BloodPressurePage'
 import HeartRatePage from '../pages/HeartRatePage';
 import WeightPage from '../pages/WeightPage';
-
-// pantalla medicacion 
 import AddMedicationPage from '../pages/AddMedicationPage';
 
 const Tab = createBottomTabNavigator();
@@ -51,7 +39,7 @@ const BackButton = ({ onPress }) => (
   </TouchableOpacity>
 );
 
-// Stack de Salud que incluye las pantallas de Diálisis
+
 function HealthStackScreen() {
   const navigation = useNavigation();
 
@@ -61,7 +49,7 @@ function HealthStackScreen() {
         headerLeft: (props) => (
           <TouchableOpacity 
             onPress={() => {
-              // Comportamiento por defecto: regresar a la pantalla anterior
+             
               navigation.goBack();
             }}
             style={{ marginLeft: 15 }}
@@ -336,7 +324,7 @@ export default function BottomTabNavigator() {
         component={HealthStackScreen}
         listeners={({ navigation }) => ({
           tabPress: (e) => {
-            // Resetear el stack de navegación al presionar la pestaña
+  
             navigation.navigate('Salud', {
               screen: 'HealthMain'
             });

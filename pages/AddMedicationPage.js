@@ -52,7 +52,7 @@ const AddMedicationPage = ({ navigation }) => {
   const [selectedTimeIndex, setSelectedTimeIndex] = useState(null);
   const [selectedDays, setSelectedDays] = useState([]);
   const [showDaysModal, setShowDaysModal] = useState(false);
-  //const navigation = useNavigation();
+  
 
 
     useLayoutEffect(() => {
@@ -69,19 +69,19 @@ const AddMedicationPage = ({ navigation }) => {
 
 
   
-  // En la función handleSave, asegúrate que los días se guarden en inglés
+ 
 const handleSave = async () => {
   const medicationData = {
     name: medicationName,
     dosage,
-    times: times.map(t => t.toISOString().split('T')[1].substring(0, 5)), // Formato HH:MM
+    times: times.map(t => t.toISOString().split('T')[1].substring(0, 5)), 
     color: selectedColor,
     notes,
     alarmEnabled,
     days: selectedDays.map(day => DAYS_MAPPING[day])
   };
 
-  console.log('Enviando datos:', medicationData); // Para debug
+  console.log('Enviando datos:', medicationData); 
 
   try {
     await addMedication(medicationData);
@@ -133,7 +133,7 @@ const handleSave = async () => {
           value={medicationName}
           onChangeText={setMedicationName}
           style={styles.input}
-          placeholderTextColor="#6B7280" // Gris más claro para el placeholder
+          placeholderTextColor="#6B7280" 
         />
       </View>
 
@@ -193,7 +193,7 @@ const handleSave = async () => {
           value={dosage}
           onChangeText={setDosage}
           style={styles.input}
-          placeholderTextColor="#6B7280" // Gris más claro para el placeholder
+          placeholderTextColor="#6B7280" 
         />
       </View>
 
@@ -251,16 +251,7 @@ const handleSave = async () => {
         multiline
       />
 
-      {/* Alarma 
-      <View style={styles.switchContainer}>
-        <Text>Activar alarma</Text>
-        <Switch
-          value={alarmEnabled}
-          onValueChange={setAlarmEnabled}
-        />
-      </View>
-
-      */} 
+    
 
       {/* Botones de guardar y cancelar */}
       <Button title="Guardar" onPress={handleSave} />
@@ -274,7 +265,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#F8F9FC', // Fondo similar al de la imagen
+    backgroundColor: '#F8F9FC', 
   },
 
   input: {
@@ -286,7 +277,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     marginBottom: 16,
     fontSize: 16,
-    color: '#374151', // ⚠️ Asegúrate de que este color sea igual al de "Añadir hora de toma"
+    color: '#374151', 
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -301,7 +292,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#374151', // 🔥 Mismo gris oscuro que "Añadir hora de toma"
+    color: '#374151',
     marginBottom: 10,
   },
   dayButton: {
@@ -392,17 +383,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   navText: {
-    fontSize: 18, // Reducir el tamaño del texto
+    fontSize: 18, 
     color: '#007AFF',
-    marginHorizontal: 10, // Espacio entre flechas y título
+    marginHorizontal: 10,
   },
   monthTitle: {
-    fontSize: 16, // Tamaño del texto del mes
+    fontSize: 16, 
     fontWeight: 'bold',
     color: '#000',
   },
   yearTitle: {
-    fontSize: 14, // Tamaño del texto del año
+    fontSize: 14, 
     color: '#000',
   },
   headerWrapper: {
@@ -410,8 +401,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10, // Espacio interno
-    width: '100%', // Asegurar que ocupe todo el ancho
+    paddingHorizontal: 10, 
+    width: '100%', 
   },
 
 
@@ -419,7 +410,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(90, 90, 90, 0.6)', // Gris más claro con opacidad reducida
+    backgroundColor: 'rgba(90, 90, 90, 0.6)', 
   },
   modalContent: {
     backgroundColor: '#FFFFFF',
@@ -429,30 +420,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 16, // Menos llamativo
+    fontSize: 16, 
     fontWeight: '500',
     marginBottom: 15,
-    color: '#4A4A4A', // Gris oscuro
+    color: '#4A4A4A', 
   },
   dayButton: {
     width: '100%',
-    backgroundColor: '#E0E0E0', // Gris más oscuro cuando no está seleccionado
-    paddingVertical: 16, // Más separación
+    backgroundColor: '#E0E0E0', 
+    paddingVertical: 16, 
     borderRadius: 10,
-    marginBottom: 12, // Más espacio entre los días
+    marginBottom: 12, 
     alignItems: 'center',
     justifyContent: 'center',
   },
   dayButtonSelected: {
-    backgroundColor: '#2D47C3', // Azul más oscuro cuando está seleccionado
+    backgroundColor: '#2D47C3', 
   },
   dayButtonText: {
     fontSize: 16,
-    color: '#000', // Letra en negro cuando no está seleccionado
+    color: '#000', 
     fontWeight: '500',
   },
   dayButtonTextSelected: {
-    color: '#FFFFFF',  // Texto en blanco cuando está seleccionado
+    color: '#FFFFFF',  
   },
   closeButtonContainer: {
     width: '100%',
@@ -502,7 +493,7 @@ const pickerSelectStyles = StyleSheet.create({
 
   frequencyText: {
     fontSize: 16,
-    color: '#4a4950', // 🔥 Mismo gris oscuro para coherencia
+    color: '#4a4950', 
     fontWeight: '100',
     paddingVertical: 12,
     paddingHorizontal: 14,

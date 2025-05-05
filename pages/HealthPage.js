@@ -23,7 +23,7 @@ const HealthPage = () => {
       ),
       headerStyle: {
         shadowColor: 'transparent', // Elimina la sombra en iOS
-        elevation: 0, // Elimina la sombra en Android
+        elevation: 0, d
       },
     });
   }, [navigation]);

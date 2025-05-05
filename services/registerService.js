@@ -12,8 +12,7 @@ export const registerUser = async (name, lastname, email, password) => {
     });
     return response.data;
   } catch (error) {
-   /* console.error('Error en registerUser:', error);
-    throw error.response?.data?.message || 'Hubo un problema al registrarse';*/
+ 
    
     if (error.response) {
     console.error('Error en registerUser - Respuesta del servidor:', error.response.data);

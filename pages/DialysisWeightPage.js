@@ -35,7 +35,7 @@ useLayoutEffect(() => {
 
     navigation.navigate('DialysisDaysPage', {
       treatmentType: route.params?.treatmentType,
-      startDate: route.params?.startDate, // Pasar la fecha recibida
+      startDate: route.params?.startDate, 
       weight: parseFloat(weight)
     });
   };
