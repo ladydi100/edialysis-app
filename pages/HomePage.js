@@ -150,6 +150,7 @@ const HomePage = ({ navigation }) => {
   return (
     <ScrollView
       style={styles.container}
+      contentContainerStyle={{ paddingBottom: 15 }} // 👈 Este es el cambio
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -159,6 +160,7 @@ const HomePage = ({ navigation }) => {
         />
       }
     >
+
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>Hola, <Text style={styles.userName}>¡{userData?.name || 'Usuario'}!</Text></Text>
@@ -202,11 +204,20 @@ const HomePage = ({ navigation }) => {
       <Text style={styles.subText}>{formatDate(new Date())}</Text>
 
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.medicationContainer}>
-        {meds.map((med) => (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.medicationContainer}
+        contentContainerStyle={{ paddingHorizontal: 4, paddingVertical: 6, }}
+      >
+        {meds.map((med, index) => (
           <TouchableOpacity
             key={med.time_id}
-            style={[styles.medCard, med.taken && styles.medCardTaken]}
+            style={[
+              styles.medCard,
+              med.taken && styles.medCardTaken,
+              index !== meds.length - 1 && { marginRight: 10 } // margen entre tarjetas excepto en la última
+            ]}
             onPress={() => toggleMedication(med.time_id)}
           >
             <View style={styles.medContent}>
@@ -214,7 +225,6 @@ const HomePage = ({ navigation }) => {
               <View>
                 <Text style={[styles.medTime, med.taken && styles.medTextWhite]}>{med.time}</Text>
                 <Text style={[styles.medName, med.taken && styles.medTextWhite]}>{med.name}</Text>
-
               </View>
             </View>
             {med.taken ? (
@@ -222,17 +232,12 @@ const HomePage = ({ navigation }) => {
                 <MaterialIcons name="check" size={18} color="#2D47C3" />
               </View>
             ) : (
-              <MaterialIcons
-                name="check-box-outline-blank"
-                size={24}
-                color="black"
-                style={styles.checkbox}
-              />
+              <View style={styles.checkboxUnselectedBox} />
             )}
-
           </TouchableOpacity>
         ))}
       </ScrollView>
+
 
       <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Medicación', { screen: 'AddMedication' })}>
         <Ionicons name="add-outline" size={18} color="#3E3EEC" style={styles.addIcon} />
@@ -299,7 +304,6 @@ const styles = StyleSheet.create({
     width: 130,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3,
     marginRight: 14,
   },
   healthTitle: {
@@ -350,6 +354,8 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 10
   },
+
+
   medCard: {
     backgroundColor: '#FFFFFF',
     padding: 15,
@@ -359,12 +365,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    marginRight: 10
+    marginRight: 10,
+    shadowColor: '#9c9c9c',
+    shadowOffset: { width: 0, height: 1 }, // sombra más sutil
+    shadowOpacity: 0.08,                  // menor opacidad
+    shadowRadius: 2,                      // menos difusa
+    elevation: 2,                         // sombra suave en Android
   },
+
+
+
+
   medCardTaken: {
     backgroundColor: '#4866A9'
   },
@@ -400,9 +411,21 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 4,
-    backgroundColor: '#FFFFF2',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  checkboxUnselectedBox: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+    borderColor: '#888',
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 'auto',
   },
 
 
