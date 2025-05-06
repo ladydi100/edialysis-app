@@ -2,22 +2,22 @@ import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, RefreshControl } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
-import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 import API_URL from '../config/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MedicalAppointments from './MedicalAppointments'; 
+import MedicalAppointments from './MedicalAppointments'; // Asegúrate de que la ruta sea correcta
 import { getMedicationsByDate } from '../services/medicationService';
 import { updateMedicationTakenStatus } from '../services/medicationService';
 
- 
+
 
 const HomePage = ({ navigation }) => {
-    const { userData, userToken } = useContext(AuthContext);
-    const [meds, setMeds] = useState([]);
-    const [loadingMeds, setLoadingMeds] = useState(true);
-    const isFocused = useIsFocused();
-    const [healthData, setHealthData] = useState({
+  const { userData, userToken } = useContext(AuthContext);
+  const [meds, setMeds] = useState([]);
+  const [loadingMeds, setLoadingMeds] = useState(true);
+  const isFocused = useIsFocused();
+  const [healthData, setHealthData] = useState({
     heartRate: null,
     bloodPressure: null,
     weight: null,
@@ -26,9 +26,9 @@ const HomePage = ({ navigation }) => {
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
- 
 
- const formatDate = (date) => {
+  // Función para formatear la fecha como "Lunes 25 enero"
+  const formatDate = (date) => {
     const dayOfWeek = date.toLocaleString('es-ES', { weekday: 'long' });
     const day = date.getDate();
     const month = date.toLocaleString('es-ES', { month: 'long' });
@@ -40,16 +40,16 @@ const HomePage = ({ navigation }) => {
 
   const fetchHealthData = async () => {
     const token = await AsyncStorage.getItem('userToken');
-    
+
     try {
       const heartRateResponse = await axios.get(`${API_URL}/heart-rate/latest`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       const bloodPressureResponse = await axios.get(`${API_URL}/blood-pressure/latest`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       const weightResponse = await axios.get(`${API_URL}/weight/latest`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -68,22 +68,22 @@ const HomePage = ({ navigation }) => {
     }
   };
 
- // Función para obtener medicamentos del día actual
+  // Función para obtener medicamentos del día actual
   const fetchTodayMedications = async () => {
     try {
       const today = new Date();
       const adjustedDate = new Date(today);
       adjustedDate.setMinutes(adjustedDate.getMinutes() - adjustedDate.getTimezoneOffset());
       const formattedDate = adjustedDate.toISOString().split('T')[0];
-      
+
       const medications = await getMedicationsByDate(formattedDate, userToken);
-      
+
       const formattedMeds = medications.map(med => ({
         ...med,
         time: new Date(`1970-01-01T${med.time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         taken: med.taken || false
       })).sort((a, b) => a.time.localeCompare(b.time));
-      
+
       setMeds(formattedMeds);
     } catch (error) {
       console.error('Error fetching medications:', error);
@@ -94,7 +94,7 @@ const HomePage = ({ navigation }) => {
 
 
 
-useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
       fetchTodayMedications();
     }, [isFocused])
@@ -103,17 +103,17 @@ useFocusEffect(
 
 
 
-    const toggleMedication = async (time_id) => {
+  const toggleMedication = async (time_id) => {
     try {
       const today = new Date();
       const formattedDate = today.toISOString().split('T')[0];
-      
+
       const medication = meds.find(med => med.time_id === time_id);
       const newTakenStatus = !medication.taken;
-      
+
       await updateMedicationTakenStatus(time_id, formattedDate, newTakenStatus, userToken);
-      
-      setMeds(prev => prev.map(med => 
+
+      setMeds(prev => prev.map(med =>
         med.time_id === time_id ? { ...med, taken: newTakenStatus } : med
       ));
     } catch (error) {
@@ -123,7 +123,7 @@ useFocusEffect(
 
 
 
-    // Cargar datos al enfocar
+  // Cargar datos al enfocar
   useEffect(() => {
     if (isFocused) {
       setLoading(true);
@@ -148,7 +148,7 @@ useFocusEffect(
   }
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       refreshControl={
         <RefreshControl
@@ -177,9 +177,9 @@ useFocusEffect(
         <View style={[styles.healthCard, styles.cardTeal]}>
           <Text style={styles.healthTitle}>Presión arterial</Text>
           <Text style={styles.healthValue}>
-           {healthData.bloodPressure?.systolic != null && healthData.bloodPressure?.diastolic != null
-    ? `${healthData.bloodPressure.systolic}/${healthData.bloodPressure.diastolic} mmHg`
-    : '--/--'}
+            {healthData.bloodPressure ?
+              `${healthData.bloodPressure.systolic}/${healthData.bloodPressure.diastolic} mmHg` :
+              '--/--'}
           </Text>
         </View>
         <View style={[styles.healthCard, styles.cardRed]}>
@@ -188,20 +188,20 @@ useFocusEffect(
             {healthData.weight ? `${healthData.weight} kg` : '--'}
           </Text>
         </View>
-     
+
       </ScrollView>
 
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Salud', { 
-  screen: 'SelectValues' 
-})}>
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Salud', {
+        screen: 'SelectValues'
+      })}>
         <Ionicons name="add-outline" size={18} color="#3E3EEC" style={styles.addIcon} />
         <Text style={styles.addButtonText}>Añadir nuevo</Text>
       </TouchableOpacity>
 
       <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Tu medicación</Text>
       <Text style={styles.subText}>{formatDate(new Date())}</Text>
-      
-      
+
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.medicationContainer}>
         {meds.map((med) => (
           <TouchableOpacity
@@ -212,16 +212,24 @@ useFocusEffect(
             <View style={styles.medContent}>
               <View style={[styles.medCircle, { backgroundColor: med.color }]} />
               <View>
-                <Text style={styles.medTime}>{med.time}</Text>
-                <Text style={styles.medName}>{med.name}</Text>
+                <Text style={[styles.medTime, med.taken && styles.medTextWhite]}>{med.time}</Text>
+                <Text style={[styles.medName, med.taken && styles.medTextWhite]}>{med.name}</Text>
+
               </View>
             </View>
-            <MaterialIcons 
-              name={med.taken ? 'check-box' : 'check-box-outline-blank'} 
-              size={24} 
-              color={med.taken ? 'green' : 'black'} 
-              style={styles.checkbox} 
-            />
+            {med.taken ? (
+              <View style={styles.checkboxSelectedBox}>
+                <MaterialIcons name="check" size={18} color="#2D47C3" />
+              </View>
+            ) : (
+              <MaterialIcons
+                name="check-box-outline-blank"
+                size={24}
+                color="black"
+                style={styles.checkbox}
+              />
+            )}
+
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -237,9 +245,9 @@ useFocusEffect(
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    backgroundColor: '#FAFAFA', 
-    padding: 20, 
+  container: {
+    backgroundColor: '#FAFAFA',
+    padding: 20,
     paddingTop: 0
   },
   loadingContainer: {
@@ -248,31 +256,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FAFAFA'
   },
-  header: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    marginBottom: 20 
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20
   },
-  greeting: { 
-    fontSize: 36, 
-    color: '#161B43', 
-    fontFamily: 'Inter-Regular' 
+  greeting: {
+    fontSize: 36,
+    color: '#161B43',
+    fontFamily: 'Inter-Regular'
   },
-  userName: { 
-    fontWeight: '600', 
-    fontFamily: 'Inter-SemiBold' 
+  userName: {
+    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold'
   },
-  avatar: { 
-    width: 50, 
-    height: 50, 
-    borderRadius: 25 
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25
   },
-  sectionTitle: { 
-    fontSize: 20, 
-    color: '#3E3E3E', 
-    fontWeight: '600', 
-    marginBottom: 12 
+  sectionTitle: {
+    fontSize: 20,
+    color: '#3E3E3E',
+    fontWeight: '600',
+    marginBottom: 12
   },
   subText: {
     fontSize: 14,
@@ -306,17 +314,17 @@ const styles = StyleSheet.create({
     color: '#161B43',
     marginTop: 6,
   },
-  cardBlue: { 
-    backgroundColor: '#D9EFFF' 
+  cardBlue: {
+    backgroundColor: '#D9EFFF'
   },
-  cardTeal: { 
-    backgroundColor: '#D1F2E8' 
+  cardTeal: {
+    backgroundColor: '#D1F2E8'
   },
-  cardRed: { 
-    backgroundColor: '#FFD9D9' 
+  cardRed: {
+    backgroundColor: '#FFD9D9'
   },
-  cardYellow: { 
-    backgroundColor: '#FFF4CC' 
+  cardYellow: {
+    backgroundColor: '#FFF4CC'
   },
   addButton: {
     flexDirection: 'row',
@@ -337,52 +345,67 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#3E3EEC',
   },
-  medicationContainer: { 
-    flexDirection: 'row', 
-    gap: 10, 
-    marginTop: 10 
+  medicationContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10
   },
-  medCard: { 
-    backgroundColor: '#FFFFFF', 
-    padding: 15, 
-    borderRadius: 8, 
-    width: 168, 
-    height: 94, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 0.1, 
-    shadowRadius: 4, 
-    marginRight: 10 
+  medCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    borderRadius: 8,
+    width: 168,
+    height: 94,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    marginRight: 10
   },
-  medCardTaken: { 
-    backgroundColor: '#E3E7FF' 
+  medCardTaken: {
+    backgroundColor: '#4866A9'
   },
-  medContent: { 
-    flexDirection: 'row', 
-    alignItems: 'center' 
+  medContent: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
-  medCircle: { 
-    width: 10, 
-    height: 10, 
-    borderRadius: 5, 
-    marginRight: 8 
+  medCircle: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8
   },
-  medTime: { 
-    fontSize: 14, 
-    fontWeight: '600', 
-    color: '#3E3E3E' 
+  medTime: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3E3E3E'
   },
-  medName: { 
-    fontSize: 16, 
-    fontWeight: 'bold', 
-    color: '#161B43' 
+  medName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#161B43'
   },
-  checkbox: { 
-    marginLeft: 'auto' 
+  checkbox: {
+    marginLeft: 'auto'
   },
+
+  medTextWhite: {
+    color: '#FFFFFF',
+  },
+
+  checkboxSelectedBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    backgroundColor: '#FFFFF2',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+
 });
 
 export default HomePage;
