@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useLayoutEffect} from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
@@ -10,16 +10,16 @@ const HeartRatePage = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [heartRate, setHeartRate] = useState('');
-
-   const [loading, setLoading] = useState(true);
+  const [heartRateData, setHeartRateData] = useState([]); // Array para almacenar valores
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-   useLayoutEffect(() => {
-  navigation.setOptions({
-    headerTitle: '',
-    headerLeft: () => <BackButton navigation={navigation} />
-  });
-}, [navigation]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => <BackButton navigation={navigation} />
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const fetchLatestHeartRate = async () => {
@@ -35,9 +35,16 @@ const HeartRatePage = () => {
         if (response.data.heart_rate) {
           setHeartRate(response.data.heart_rate.toString());
         }
+
+        // Si hay datos previos guardados, los cargamos
+        const storedData = await AsyncStorage.getItem('heartRateData');
+        if (storedData) {
+          setHeartRateData(JSON.parse(storedData));
+        }
+
       } catch (error) {
         console.error('Error fetching latest heart rate:', error);
-         setError('Error al obtener los datos de frecuencia cardíaca');
+        setError('Error al obtener los datos de frecuencia cardíaca');
       } finally {
         setLoading(false);
       }
@@ -48,33 +55,47 @@ const HeartRatePage = () => {
 
   const handleSave = async () => {
     if (!heartRate) {
-       Alert.alert('Por favor, introduce un valor válido.');
+      Alert.alert('Por favor, introduce un valor válido.');
       return;
     }
 
-      const token = await AsyncStorage.getItem('userToken');
+    const token = await AsyncStorage.getItem('userToken');
+    const timestamp = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
 
     try {
+      // Guardar en el backend (opcional)
       await axios.post(`${API_URL}/heart-rate`, { heartRate }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-    navigation.navigate('SelectedValues', {
-      selectedParameters: route.params?.selectedParameters || [],
-      updatedValues: {
-        ...route.params?.updatedValues,
-        heartRate: `${heartRate} bpm`
-      }
-    });
-     } catch (error) {
+      // Crear un nuevo registro con la fecha y el valor
+      const newEntry = { date: timestamp, value: parseInt(heartRate) };
+      const updatedData = [...heartRateData, newEntry];
+
+      // Guardar en AsyncStorage
+      await AsyncStorage.setItem('heartRateData', JSON.stringify(updatedData));
+
+      // Actualizar el estado local
+      setHeartRateData(updatedData);
+
+      // Redirigir a la página de valores seleccionados
+      navigation.navigate('SelectedValues', {
+        selectedParameters: route.params?.selectedParameters || [],
+        updatedValues: {
+          ...route.params?.updatedValues,
+          heartRate: updatedData,
+        },
+      });
+
+    } catch (error) {
       console.error('Error saving heart rate:', error);
-       Alert.alert('Error', 'No se pudo guardar la frecuencia cardíaca. Inténtalo de nuevo.');
+      Alert.alert('Error', 'No se pudo guardar la frecuencia cardíaca. Inténtalo de nuevo.');
     }
   };
 
-if (loading) {
+  if (loading) {
     return (
       <View style={styles.container}>
         <Text>Cargando...</Text>
@@ -89,8 +110,6 @@ if (loading) {
       </View>
     );
   }
-
-
 
   return (
     <View style={styles.container}>

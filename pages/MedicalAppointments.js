@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator,  Alert} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
-import { getMedicalAppointments,  deleteMedicalAppointment, updateMedicalAppointment  } from '../services/medicalAppointmentService';
+import { getMedicalAppointments, deleteMedicalAppointment, updateMedicalAppointment } from '../services/medicalAppointmentService';
 import { useIsFocused } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -13,29 +13,29 @@ const MedicalAppointments = () => {
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userToken } = useContext(AuthContext);
-  const isFocused = useIsFocused(); 
-  
+  const isFocused = useIsFocused();
 
-    // Estados para el modal y datepicker
+
+  // Estados para el modal y datepicker
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [newDate, setNewDate] = useState(new Date());
   const [isUpdating, setIsUpdating] = useState(false);
- 
-      const fetchAppointments = async () => {
+
+  const fetchAppointments = async () => {
     try {
       setLoading(true);
       const appointmentsData = await getMedicalAppointments(userToken);
       setAppointments(appointmentsData);
-      
+
       // Filtrar citas desde hoy en adelante
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       const futureAppointments = appointmentsData.filter(appointment => {
         const appointmentDate = new Date(appointment.appointment_date);
         return appointmentDate >= today;
       }).sort((a, b) => new Date(a.appointment_date) - new Date(b.appointment_date));
-      
+
       setFilteredAppointments(futureAppointments);
       setCurrentIndex(0); // Resetear el índice al cargar nuevas citas
     } catch (error) {
@@ -55,7 +55,7 @@ const MedicalAppointments = () => {
 
 
 
-   const nextAppointment = () => {
+  const nextAppointment = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % filteredAppointments.length);
   };
 
@@ -63,11 +63,11 @@ const MedicalAppointments = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + filteredAppointments.length) % filteredAppointments.length);
   };
 
- const handleDeleteAppointment = async () => {
+  const handleDeleteAppointment = async () => {
     if (filteredAppointments.length === 0) return;
-    
+
     const currentAppointment = filteredAppointments[currentIndex];
-    
+
     Alert.alert(
       'Anular Cita',
       `¿Estás seguro que deseas anular la cita de ${currentAppointment.specialty}?`,
@@ -82,7 +82,7 @@ const MedicalAppointments = () => {
             try {
               await deleteMedicalAppointment(currentAppointment.id, userToken);
               Alert.alert('Éxito', 'La cita ha sido anulada correctamente');
-              fetchAppointments(); 
+              fetchAppointments();
             } catch (error) {
               console.error('Error deleting appointment:', error);
               Alert.alert('Error', 'No se pudo anular la cita');
@@ -94,7 +94,7 @@ const MedicalAppointments = () => {
     );
   };
 
-   const handleChangeDate = () => {
+  const handleChangeDate = () => {
     if (filteredAppointments.length === 0) return;
     const currentAppointment = filteredAppointments[currentIndex];
     setNewDate(new Date(currentAppointment.appointment_date));
@@ -103,11 +103,11 @@ const MedicalAppointments = () => {
 
   const handleDateChange = async (event, selectedDate) => {
     setShowDatePicker(false);
-    
+
     if (selectedDate) {
       const currentAppointment = filteredAppointments[currentIndex];
       const formattedDate = selectedDate.toISOString().split('T')[0];
-      
+
       try {
         setIsUpdating(true);
         await updateMedicalAppointment({
@@ -116,7 +116,7 @@ const MedicalAppointments = () => {
           appointment_date: formattedDate,
           appointment_time: currentAppointment.appointment_time
         }, userToken);
-        
+
         Alert.alert('Éxito', 'Fecha de la cita actualizada correctamente');
         fetchAppointments();
       } catch (error) {
@@ -130,18 +130,18 @@ const MedicalAppointments = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const options = { 
-      weekday: 'long', 
-      day: 'numeric', 
+    const options = {
+      weekday: 'long',
+      day: 'numeric',
       month: 'long',
-      timeZone: 'UTC' 
+      timeZone: 'UTC'
     };
 
- const formattedDate = date.toLocaleDateString('es-ES', options);
+    const formattedDate = date.toLocaleDateString('es-ES', options);
     return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
   };
 
-    if (loading || isUpdating) {
+  if (loading || isUpdating) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#3B49B4" />
@@ -149,7 +149,7 @@ const MedicalAppointments = () => {
     );
   }
 
-   if (filteredAppointments.length === 0) {
+  if (filteredAppointments.length === 0) {
     return (
       <View style={styles.appointmentContainer}>
         <Text style={styles.sectionTitle}>Citas médicas</Text>
@@ -160,7 +160,7 @@ const MedicalAppointments = () => {
     );
   }
 
- return (
+  return (
     <View style={styles.appointmentContainer}>
       <Text style={styles.sectionTitle}>Citas médicas</Text>
       <View style={styles.appointmentCard}>
@@ -191,7 +191,7 @@ const MedicalAppointments = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.changeButton} 
+          <TouchableOpacity style={styles.changeButton}
             onPress={handleChangeDate}
             disabled={isUpdating}>
             <Text style={styles.changeText}>Cambiar fecha</Text>
@@ -205,7 +205,7 @@ const MedicalAppointments = () => {
       </View>
 
 
-       {showDatePicker && (
+      {showDatePicker && (
         <DateTimePicker
           value={newDate}
           mode="date"
@@ -220,8 +220,8 @@ const MedicalAppointments = () => {
 
 
 const styles = StyleSheet.create({
-  appointmentContainer: { 
-    marginTop: 32 
+  appointmentContainer: {
+    marginTop: 32
   },
   appointmentCard: {
     backgroundColor: '#FFFFFF',
@@ -233,30 +233,30 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3
   },
-  appointmentHeader: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginBottom: 5 
+  appointmentHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5
   },
-  sectionTitle: { 
-    fontSize: 20, 
-    color: '#3E3E3E', 
-    fontWeight: '600', 
-    marginBottom: 12 
+  sectionTitle: {
+    fontSize: 20,
+    color: '#3E3E3E',
+    fontWeight: '600',
+    marginBottom: 12
   },
-  appointmentTitle: { 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    marginLeft: 8, 
-    color: '#3E3E3E' 
+  appointmentTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 8,
+    color: '#3E3E3E'
   },
-  department: { 
-    color: '#6D6D6D', 
-    marginBottom: 10 
+  department: {
+    color: '#6D6D6D',
+    marginBottom: 10
   },
-  boldText: { 
-    fontWeight: '600', 
-    color: '#3E3E3E' 
+  boldText: {
+    fontWeight: '600',
+    color: '#3E3E3E'
   },
   navigationContainer: {
     flexDirection: 'row',
@@ -292,38 +292,42 @@ const styles = StyleSheet.create({
     color: '#3E3E3E',
     marginLeft: 5
   },
-  buttonContainer: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    marginTop: 12 
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12
   },
   changeButton: {
-    borderWidth: 1,
-    borderColor: '#3E3EEC',
-    padding: 12,
-    borderRadius: 8,
     flex: 1,
+    height: 50,
     marginRight: 8,
-    alignItems: 'center'
+    borderWidth: 1,
+    borderColor: '#3B47B4',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#00000000',
   },
-  changeText: { 
-    fontSize: 16, 
-    color: '#3E3EEC', 
-    fontWeight: '500' 
+  changeText: {
+    fontSize: 16,
+    color: '#3B47B4',
+    fontWeight: '500'
   },
   confirmButton: {
-    backgroundColor: '#3E3EEC',
-    padding: 12,
-    borderRadius: 8,
     flex: 1,
+    height: 50,
     marginLeft: 8,
-    alignItems: 'center'
+    backgroundColor: '#2D47C3',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  confirmText: { 
-    fontSize: 16, 
-    color: '#FFFFFF', 
-    fontWeight: '500' 
-  }
+  confirmText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '500'
+  },
+
 });
 
 export default MedicalAppointments;

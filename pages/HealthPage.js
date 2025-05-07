@@ -10,23 +10,23 @@ import { Ionicons } from '@expo/vector-icons';
 const HealthPage = () => {
     const navigation = useNavigation();
 
- useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: 'Salud', // Título de la pantalla
-      headerLeft: () => (
-        <TouchableOpacity 
-          onPress={() => navigation.navigate('Home')} // Navega a Home al presionar
-          style={{ marginLeft: 15 }}
-        >
-          <Ionicons name="arrow-back" size={26} color="#3B49B4" />
-        </TouchableOpacity>
-      ),
-      headerStyle: {
-        shadowColor: 'transparent', 
-        elevation: 0, d
-      },
-    });
-  }, [navigation]);
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: 'Salud', // Título de la pantalla
+            headerLeft: () => (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Home')} // Navega a Home al presionar
+                    style={{ marginLeft: 15 }}
+                >
+                    <Ionicons name="arrow-back" size={26} color="#3B49B4" />
+                </TouchableOpacity>
+            ),
+            headerStyle: {
+                shadowColor: 'transparent',
+                elevation: 0,
+            },
+        });
+    }, [navigation]);
 
     return (
         <View style={styles.container}>
@@ -40,9 +40,10 @@ const HealthPage = () => {
             </View>
 
             {/* Opciones de salud */}
-            <TouchableOpacity  style={styles.option} 
-             onPress={() => navigation.navigate('Salud', { 
-              screen: 'SelectValues'})}
+            <TouchableOpacity style={styles.option}
+                onPress={() => navigation.navigate('Salud', {
+                    screen: 'SelectValues'
+                })}
             >
                 <Icon name="heart" size={24} color="#3B49B4" style={styles.icon} />
                 <View>
@@ -60,12 +61,12 @@ const HealthPage = () => {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-  style={styles.option} 
-  onPress={() => navigation.navigate('Salud', { 
-    screen: 'MedicalAppointmentsSelectionPage'
-  })}
->
+            <TouchableOpacity
+                style={styles.option}
+                onPress={() => navigation.navigate('Salud', {
+                    screen: 'MedicalAppointmentsSelectionPage'
+                })}
+            >
                 <Ionicons name="calendar" size={24} color="#3B49B4" style={styles.icon} />
                 <View>
                     <Text style={styles.optionTitle}>Citas médicas</Text>
