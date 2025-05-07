@@ -1,25 +1,22 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { useNavigation } from '@react-navigation/native';
 
-
-const AnalyticsPage = () => {
-  const navigation = useNavigation();
+const AnalyticsPage = ({ navigation }) => {
   const [documents, setDocuments] = useState([
-    { id: '1', name: 'Analítica 1' },
-    { id: '2', name: 'Analítica 2' },
-    { id: '3', name: 'Analítica 2' },
-    { id: '4', name: 'Analítica 2' },
+    { id: '1', name: 'Analítica 1', uri: 'https://www.example.com/sample1.pdf' },
+    { id: '2', name: 'Analítica 2', uri: 'https://www.example.com/sample2.pdf' },
+    { id: '3', name: 'Analítica 3', uri: 'https://www.example.com/sample3.pdf' },
+    { id: '4', name: 'Analítica 4', uri: 'https://www.example.com/sample4.pdf' },
   ]);
-
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: 'Mis Analíticas',
       headerLeft: () => (
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => navigation.navigate('Home')}
           style={{ marginLeft: 15 }}
         >
@@ -29,24 +26,34 @@ const AnalyticsPage = () => {
     });
   }, [navigation]);
 
-
   const pickDocument = async () => {
-    let result = await DocumentPicker.getDocumentAsync({
-      type: '*/*', 
-      
-    });
-    
-    if (result.canceled === false) {
-      const newDoc = { id: String(Date.now()), name: result.assets[0].name };
-      setDocuments([...documents, newDoc]);
+    try {
+      let result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+      });
+
+      if (result.type !== 'cancel') {
+        const newDoc = {
+          id: String(Date.now()),
+          name: result.name || 'Documento sin nombre',
+          uri: result.uri,
+        };
+
+        setDocuments([...documents, newDoc]);
+      }
+    } catch (error) {
+      console.log("Error picking document:", error);
     }
+  };
+
+  const openDocument = (document) => {
+    navigation.navigate('DocumentViewer', { uri: document.uri, name: document.name });
   };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-       
         <Text style={styles.title}>Analíticas</Text>
       </View>
 
@@ -69,9 +76,12 @@ const AnalyticsPage = () => {
         data={documents}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.documentItem}>
+          <TouchableOpacity
+            style={styles.documentItem}
+            onPress={() => openDocument(item)}
+          >
             <Text>{item.name}</Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
 

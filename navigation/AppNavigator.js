@@ -9,12 +9,13 @@ import BottomTabNavigator from './BottomTabNavigator';
 import AddMedicationPage from '../pages/AddMedicationPage';
 import MedicationDetail from '../pages/MedicationDetail';
 import MedicalAppointmentsSelectionPage from '../pages/MedicalAppointmentsSelectionPage';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import SelectValuesPage from '../pages/SelectValuesPage';
 import SelectedValuesPage from '../pages/SelectedValuesPage';
 import HeartRatePage from '../pages/HeartRatePage';
 import BloodPressurePage from '../pages/BloodPressurePage';
 import WeightPage from '../pages/WeightPage';
+import DocumentViewer from '../pages/DocumentViewer';
 
 const Stack = createStackNavigator();
 
@@ -33,17 +34,30 @@ export default function AppNavigator() {
           />
 
           {/* Pantallas modales/emergentes (no están en las tabs) */}
-         
           <Stack.Screen name="MedicationDetail" component={MedicationDetail} />
-        
-      
 
-          {/* Pantallas de valores de salud 
+          {/* Pantallas de valores de salud */}
           <Stack.Screen name="SelectValues" component={SelectValuesPage} />
           <Stack.Screen name="SelectedValues" component={SelectedValuesPage} />
           <Stack.Screen name="HeartRate" component={HeartRatePage} />
           <Stack.Screen name="BloodPressure" component={BloodPressurePage} />
-          <Stack.Screen name="Weight" component={WeightPage} />*/}
+          <Stack.Screen name="Weight" component={WeightPage} />
+
+          {/* Nueva pantalla para visualizar documentos */}
+          <Stack.Screen
+            name="DocumentViewer"
+            component={DocumentViewer}
+            options={({ route }) => ({
+              headerShown: true,
+              headerTitle: route.params?.name ? route.params.name : 'Documento',
+              headerTitleAlign: 'center',
+              headerStyle: {
+                backgroundColor: '#FAFAFA',
+              },
+              headerTintColor: '#3B49B4',
+            })}
+          />
+
         </>
       ) : (
         <>
